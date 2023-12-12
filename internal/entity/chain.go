@@ -11,9 +11,11 @@ type Chain struct {
 	Description string `json:"description"`
 	Type        string `json:"type"`
 	State       string `json:"state"`
-	TableID    uint64 `json:"table_id"`
-	Rules       []Rule `gorm:"foreignKey:ChainID"`
-	ProjectID  uint64 `json:"project_id"`
+	ProjectID 	uint64  `json:"project_id"`
+	Project	Project
+	TableID 	uint64  `json:"table_id"`
+	Table	Table
+	Rules		[]Rule
 	gorm.Model
 }
 

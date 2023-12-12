@@ -20,9 +20,7 @@ type Table struct {
 	Description string `json:"description"`
 	Type        string `json:"type"`
 	State       string `json:"state"`
-	Chains      []Chain `gorm:"foreignKey:TableID"`
-	TenantID    uint64 `json:"tenant_id"`
-	ProjectIDs []uint64   `json:"project_ids" gorm:"many2many:table_projects"`
+	Chains      []Chain 
 	gorm.Model
 }
 

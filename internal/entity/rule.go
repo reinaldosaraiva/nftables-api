@@ -8,6 +8,7 @@ import (
 
 type Rule struct {
 	ChainID    uint64 `json:"chain_id"`
+	Chain	  Chain
 	Source      string `json:"source"`
 	Destination string `json:"destination"`
 	Port        int `json:"port"`

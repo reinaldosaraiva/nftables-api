@@ -1,3 +1,4 @@
+// table_db.go
 package database
 
 import (
@@ -5,53 +6,53 @@ import (
 	"gorm.io/gorm"
 )
 
-type Table struct {
+type TableDB struct {
     DB *gorm.DB
 }
 
-func NewTable(db *gorm.DB) *Table {
-    return &Table{DB: db}
+func NewTableDB(db *gorm.DB) *TableDB {
+    return &TableDB{DB: db}
 }
 
-func (t *Table) Create(table *entity.Table) error {
-    return t.DB.Create(table).Error
+func (tdb *TableDB) Create(table *entity.Table) error {
+    return tdb.DB.Create(table).Error
 }
 
-func (t *Table) FindByID(id uint) (*entity.Table, error) {
+func (tdb *TableDB) FindByID(id uint) (*entity.Table, error) {
     var table entity.Table
-    err := t.DB.Where("id = ?", id).First(&table).Error
+    err := tdb.DB.Where("id = ?", id).First(&table).Error
     if err != nil {
         return nil, err
     }
     return &table, nil
 }
 
-func (t *Table) Update(table *entity.Table) error {
-    _, err := t.FindByID(table.ID)
+func (tdb *TableDB) Update(table *entity.Table) error {
+    _, err := tdb.FindByID(table.ID)
     if err != nil {
         return err
     }
-    return t.DB.Save(table).Error
+    return tdb.DB.Save(table).Error
 }
 
-func (t *Table) FindAll(page int, limit int, sort string) ([]entity.Table, error) {
+func (tdb *TableDB) FindAll(page int, limit int, sort string) ([]entity.Table, error) {
     var tables []entity.Table
     var err error
     if sort == "" || sort == "asc" || sort != "desc" {
         sort = "asc"
     }
     if page != 0 && limit != 0 {
-        err = t.DB.Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&tables).Error
+        err = tdb.DB.Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&tables).Error
     } else {
-        err = t.DB.Order("CreatedAt " + sort).Find(&tables).Error
+        err = tdb.DB.Order("CreatedAt " + sort).Find(&tables).Error
     }
     return tables, err
 }
 
-func (t *Table) Delete(id uint) error {
-    table, err := t.FindByID(id)
+func (tdb *TableDB) Delete(id uint) error {
+    table, err := tdb.FindByID(id)
     if err != nil {
         return err
     }
-    return t.DB.Delete(table).Error
+    return tdb.DB.Delete(table).Error
 }

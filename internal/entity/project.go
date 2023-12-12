@@ -3,10 +3,10 @@ package entity
 import "gorm.io/gorm"
 
 type Project struct {
-	TenantID    uint64 `json:"tenant_id"`
 	Name        string `json:"name"`
-	Tables      []Table `gorm:"many2many:table_projects"`
-	Chains      []Chain `gorm:"foreignKey:ProjectID"`
+	TenantID   uint64 `json:"tenant_id"`
+	Tenant    	Tenant 
+	// Chains      []Chain
 	gorm.Model
 }
 

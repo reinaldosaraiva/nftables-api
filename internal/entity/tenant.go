@@ -7,7 +7,7 @@ import (
 
 type Tenant struct {
 	Name        string `json:"name"`
-	Projects    []Project `gorm:"foreignKey:TenantID"`
+	Projects    []Project 
 	gorm.Model
 }
 
