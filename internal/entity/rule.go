@@ -7,7 +7,6 @@ import (
 )
 
 type Rule struct {
-	ID          uint64 `json:"id" gorm:"primaryKey"`
 	ChainID    uint64 `json:"chain_id"`
 	Source      string `json:"source"`
 	Destination string `json:"destination"`

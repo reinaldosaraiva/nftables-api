@@ -3,7 +3,6 @@ package entity
 import "gorm.io/gorm"
 
 type Project struct {
-	ID          uint64 `json:"id" gorm:"primaryKey"`
 	TenantID    uint64 `json:"tenant_id"`
 	Name        string `json:"name"`
 	Tables      []Table `gorm:"many2many:table_projects"`

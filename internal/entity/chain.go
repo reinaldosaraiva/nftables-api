@@ -7,7 +7,6 @@ import (
 )
 
 type Chain struct {
-	ID          uint64 `json:"id" gorm:"primaryKey"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Type        string `json:"type"`
