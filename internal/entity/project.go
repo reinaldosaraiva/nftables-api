@@ -11,9 +11,16 @@ type Project struct {
 	gorm.Model
 }
 
-func NewProject(name string, tenantID uint64) *Project {
+func NewProject(name string, tenantID uint64) (*Project,error) {
+	if name == "" {
+		return nil, ErrNameRequired
+	}
+	if tenantID == 0 {
+		return nil, ErrTenantRequired
+	}
 	return &Project{
 		Name: name,
 		TenantID: tenantID,
-	}
+	}, nil
+
 }

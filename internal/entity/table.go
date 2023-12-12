@@ -11,6 +11,8 @@ var (
 	ErrDescriptionRequired = errors.New("Description is required")
 	ErrTypeRequired = errors.New("Type is required")
 	ErrStateRequired  = errors.New("State is required")
+	ErrProjectRequired  = errors.New("Project is required")
+	ErrTenantRequired = errors.New("Tenant is required")
 )
 
 type Table struct {
