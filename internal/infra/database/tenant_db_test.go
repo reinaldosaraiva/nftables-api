@@ -45,7 +45,7 @@ func TestFindTenantByID(t *testing.T) {
 	err = tenantDB.Create(tenant)
 	assert.NoError(t, err)
 
-	foundTenant, err := tenantDB.FindByID(tenant.ID)
+	foundTenant, err := tenantDB.FindByID(uint64(tenant.ID))
 	assert.NoError(t, err)
 	assert.NotNil(t, foundTenant)
 	assert.Equal(t, "Tenant 1", foundTenant.Name)
@@ -64,7 +64,7 @@ func TestUpdateTenant(t *testing.T) {
 	err = tenantDB.Update(tenant)
 	assert.NoError(t, err)
 
-	updatedTenant, err := tenantDB.FindByID(tenant.ID)
+	updatedTenant, err := tenantDB.FindByID(uint64(tenant.ID))
 	assert.NoError(t, err)
 	assert.Equal(t, "Updated Tenant", updatedTenant.Name)
 }
@@ -94,9 +94,9 @@ func TestDeleteTenant(t *testing.T) {
 	err = tenantDB.Create(tenant)
 	assert.NoError(t, err)
 
-	err = tenantDB.Delete(tenant.ID)
+	err = tenantDB.Delete(uint64(tenant.ID))
 	assert.NoError(t, err)
 
-	_, err = tenantDB.FindByID(tenant.ID)
+	_, err = tenantDB.FindByID(uint64(tenant.ID))
 	assert.Error(t, err)
 }

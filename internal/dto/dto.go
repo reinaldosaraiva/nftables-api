@@ -15,3 +15,7 @@ type LoginDTO struct {
 type GetJWTOutput struct {
 	AccessToken string `json:"access_token"`
 }	
+
+type CreateTenantDTO struct {
+	Name string `json:"name"`
+}

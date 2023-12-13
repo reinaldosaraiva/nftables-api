@@ -17,7 +17,7 @@ func (tdb *TenantDB) Create(tenant *entity.Tenant) error {
 	return tdb.DB.Create(tenant).Error
 }
 
-func (tdb *TenantDB) FindByID(id uint) (*entity.Tenant, error) {
+func (tdb *TenantDB) FindByID(id uint64) (*entity.Tenant, error) {
 	var tenant entity.Tenant
 	err := tdb.DB.Where("id = ?", id).First(&tenant).Error
 	if err != nil {
@@ -27,7 +27,7 @@ func (tdb *TenantDB) FindByID(id uint) (*entity.Tenant, error) {
 }
 
 func (tdb *TenantDB) Update(tenant *entity.Tenant) error {
-	_, err := tdb.FindByID(tenant.ID)
+	_, err := tdb.FindByID(uint64(tenant.ID))
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (tdb *TenantDB) FindAll(page int, limit int, sort string) ([]entity.Tenant,
 	return tenants, err
 }
 
-func (tdb *TenantDB) Delete(id uint) error {
+func (tdb *TenantDB) Delete(id uint64) error {
 	tenant, err := tdb.FindByID(id)
 	if err != nil {
 		return err

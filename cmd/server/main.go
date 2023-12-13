@@ -1,10 +1,13 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/jwtauth"
 	"github.com/reinaldosaraiva/nftables-api/configs"
 	_ "github.com/reinaldosaraiva/nftables-api/docs"
 	"github.com/reinaldosaraiva/nftables-api/internal/entity"
@@ -41,15 +44,24 @@ func main() {
 	db.AutoMigrate(&entity.User{},&entity.Project{},&entity.Tenant{},&entity.Chain{},&entity.Table{},&entity.Rule{})
 
 	//Debug config values JWTExpireIn
-	// log.Println("Config JWTExpireIN: " + strconv.FormatUint(uint64(config.JWTExpireIn), 10))
+	log.Println("Config JWTExpireIN: " + strconv.FormatUint(uint64(config.JWTExpireIn), 10))
 	userHandler := handlers.NewUserHandler(database.NewUser(db))
+	tenantHandler := handlers.NewTenantHandler(database.NewTenantDB(db))
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.WithValue("jwt", config.TokenAuth))
 	r.Use(middleware.WithValue("jwtExpiresIn", config.JWTExpireIn))
 	r.Post("/users", userHandler.CreateUser)
 	r.Get("/users", userHandler.GetUserByEmail)
-
+	r.Route("/tenants", func(r chi.Router) { // Tenant routes
+        r.Use(jwtauth.Verifier(config.TokenAuth))
+        r.Use(jwtauth.Authenticator)
+        r.Post("/", tenantHandler.CreateTenant)
+        r.Get("/{id}", tenantHandler.GetTenant)
+        r.Get("/", tenantHandler.GetTenants)
+        r.Put("/{id}", tenantHandler.UpdateTenant)
+        r.Delete("/{id}", tenantHandler.DeleteTenant)
+    })
 	r.Post("/users/generate_token", userHandler.GetJWT)
 
 	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/swagger/doc.json")))
