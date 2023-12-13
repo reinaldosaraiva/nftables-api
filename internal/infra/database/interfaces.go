@@ -67,3 +67,9 @@ type ProjectInterface interface {
     // Delete deletes a Project from the database.
     Delete(id uint64) error
 }
+
+type UserInterface interface {
+	Create(user *entity.User) error
+	FindByEmail(email string) (*entity.User, error)
+
+}
