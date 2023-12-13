@@ -1,9 +1,7 @@
 package main
 
 import (
-	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -34,15 +32,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	db, err := gorm.Open(postgres.Open(config.GetDBDSN()), &gorm.Config{})
+	
 	if err != nil {
 		panic(err)
 	}
 	db.AutoMigrate(&entity.User{},&entity.Project{},&entity.Tenant{},&entity.Chain{},&entity.Table{},&entity.Rule{})
 
 	//Debug config values JWTExpireIn
-	log.Println("Config JWTExpireIN: " + strconv.FormatUint(uint64(config.JWTExpireIn), 10))
+	// log.Println("Config JWTExpireIN: " + strconv.FormatUint(uint64(config.JWTExpireIn), 10))
 	userHandler := handlers.NewUserHandler(database.NewUser(db))
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)

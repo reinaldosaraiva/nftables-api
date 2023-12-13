@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}  # Automatically create a database
+      - PGDATA=/data/postgres
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5432:5432"  # Adjust if you want a different host port
+    networks:
+      - db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${DB_NAME} -U ${DB_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  db:
+    driver: bridge
+
+volumes:
+  db:
