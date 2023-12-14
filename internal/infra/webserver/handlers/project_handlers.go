@@ -1,4 +1,4 @@
-// tenant_handler.go
+// project_handlers.go
 package handlers
 
 import (
@@ -12,55 +12,56 @@ import (
 	"github.com/reinaldosaraiva/nftables-api/internal/infra/database"
 )
 
-type TenantHandler struct {
-	TenantDB database.TenantInterface
+type ProjectHandler struct {
+	ProjectDB database.ProjectInterface
 }
 
-func NewTenantHandler(db database.TenantInterface) *TenantHandler {
-	return &TenantHandler{TenantDB: db}
+func NewProjectHandler(db database.ProjectInterface) *ProjectHandler {
+	return &ProjectHandler{ProjectDB: db}
 }
-// Create Tenant godoc
-// @Summary Create a new Tenant
-// @Description Create Tenants
-// @Tags Tenants
+
+// Create Project godoc
+// @Summary Create a new Project
+// @Description Create Projects
+// @Tags Projects
 // @Accept  json
 // @Produce  json
-// @Param request body dto.CreateTenantDTO true "tenant request"
+// @Param request body dto.CreateProjectDTO true "project request"
 // @Success 201
 // @Failure 400,500 {object} Error
-// @Router /tenants [post]
+// @Router /projects [post]
 // @Security ApiKeyAuth
-func (h *TenantHandler) CreateTenant(w http.ResponseWriter, r *http.Request) {
-	var tenant dto.CreateTenantDTO
-	err := json.NewDecoder(r.Body).Decode(&tenant)
+func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
+	var projectDTO dto.CreateProjectDTO
+	err := json.NewDecoder(r.Body).Decode(&projectDTO)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	t, err:= entity.NewTenant(tenant.Name)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
+	p := &entity.Project{
+		Name:     projectDTO.Name,
+		TenantID: projectDTO.TenantID,
 	}
-	err = h.TenantDB.Create(t)
+	err = h.ProjectDB.Create(p)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
 }
-// Get a tenant by ID godoc
-// @Summary Get a tenant by ID
-// @Description Get a tenant by ID
-// @Tags Tenants
+
+// Get a project by ID godoc
+// @Summary Get a project by ID
+// @Description Get a project by ID
+// @Tags Projects
 // @Accept  json
 // @Produce  json
-// @Param ID path int true "tenant ID"
-// @Success 200 {object} dto.CreateTenantDTO 
+// @Param id path int true "project ID"
+// @Success 200 {object} dto.CreateProjectDTO
 // @Failure 400,404
-// @Router /tenants/{id} [get]
+// @Router /projects/{id} [get]
 // @Security ApiKeyAuth
-func (h *TenantHandler) GetTenant(w http.ResponseWriter, r *http.Request) {
+func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
@@ -68,32 +69,32 @@ func (h *TenantHandler) GetTenant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tenant, err := h.TenantDB.FindByID(id)
+	project, err := h.ProjectDB.FindByID(id)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(tenant)
+	json.NewEncoder(w).Encode(project)
 }
 
-// Update a tenant by ID godoc
-// @Summary Update a tenant by ID
-// @Description Update a tenant by ID
-// @Tags Tenants
+// Update a project by ID godoc
+// @Summary Update a project by ID
+// @Description Update a project by ID
+// @Tags Projects
 // @Accept  json
 // @Produce  json
-// @Param id path int true "tenant id"
-// @Param request body dto.CreateTenantDTO true "tenant request"
+// @Param id path int true "project id"
+// @Param request body dto.CreateProjectDTO true "project request"
 // @Success 200
 // @Failure 400,404,500 {object} Error
-// @Router /tenants/{id} [put]
+// @Router /projects/{id} [put]
 // @Security ApiKeyAuth
-func (h *TenantHandler) UpdateTenant(w http.ResponseWriter, r *http.Request) {
+func (h *ProjectHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
-	var tenant entity.Tenant
-	err := json.NewDecoder(r.Body).Decode(&tenant)
+	var project entity.Project
+	err := json.NewDecoder(r.Body).Decode(&project)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -105,8 +106,8 @@ func (h *TenantHandler) UpdateTenant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tenant.ID = uint(id)
-	err = h.TenantDB.Update(&tenant)
+	project.ID = uint(id)
+	err = h.ProjectDB.Update(&project)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -115,18 +116,18 @@ func (h *TenantHandler) UpdateTenant(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// Delete Tenant by ID godoc
-// @Summary Delete Tenant a tenant by ID
-// @Description Delete Tenant a tenant by ID
-// @Tags Tenants
+// Delete Project by ID godoc
+// @Summary Delete Project by ID
+// @Description Delete Project by ID
+// @Tags Projects
 // @Accept  json
 // @Produce  json
-// @Param id path int true "tenant id"
+// @Param id path int true "project id"
 // @Success 200
 // @Failure 400,404,500 {object} Error
-// @Router /tenants/{id} [delete]
+// @Router /projects/{id} [delete]
 // @Security ApiKeyAuth
-func (h *TenantHandler) DeleteTenant(w http.ResponseWriter, r *http.Request) {
+func (h *ProjectHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
@@ -134,7 +135,7 @@ func (h *TenantHandler) DeleteTenant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.TenantDB.Delete(id)
+	err = h.ProjectDB.Delete(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -143,20 +144,20 @@ func (h *TenantHandler) DeleteTenant(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// Get all Tenants godoc
-// @Summary Get all Tenants
-// @Description Get all Tenants
-// @Tags Tenants
+// Get all Projects godoc
+// @Summary Get all Projects
+// @Description Get all Projects
+// @Tags Projects
 // @Accept  json
 // @Produce  json
 // @Param page query int false "Page"
 // @Param limit query int false "Limit"
 // @Param sort query string false "Sort"
-// @Success 200 {object} []dto.CreateTenantDTO 
+// @Success 200 {object} []dto.CreateProjectDTO
 // @Failure 400,500 {object} Error
-// @Router /tenants [get]
+// @Router /projects [get]
 // @Security ApiKeyAuth
-func (h *TenantHandler) GetTenants(w http.ResponseWriter, r *http.Request) {
+func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
 	page := r.URL.Query().Get("page")
 	limit := r.URL.Query().Get("limit")
 	sort := r.URL.Query().Get("sort")
@@ -171,12 +172,12 @@ func (h *TenantHandler) GetTenants(w http.ResponseWriter, r *http.Request) {
 		limitInt = 10
 	}
 
-	tenants, err := h.TenantDB.FindAll(pageInt, limitInt, sort)
+	projects, err := h.ProjectDB.FindAll(pageInt, limitInt, sort)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(tenants)
+	json.NewEncoder(w).Encode(projects)
 }

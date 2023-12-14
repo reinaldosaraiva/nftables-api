@@ -19,3 +19,8 @@ type GetJWTOutput struct {
 type CreateTenantDTO struct {
 	Name string `json:"name"`
 }
+
+type CreateProjectDTO struct {
+    Name     string `json:"name"`
+    TenantID uint64 `json:"tenant_id"`
+}

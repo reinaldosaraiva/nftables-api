@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  dto.CreateProjectDTO:
+    properties:
+      name:
+        type: string
+      tenant_id:
+        type: integer
+    type: object
   dto.CreateTenantDTO:
     properties:
       name:
@@ -36,6 +43,172 @@ info:
   title: NFTABLES API Go
   version: "0.1"
 paths:
+  /projects:
+    get:
+      consumes:
+      - application/json
+      description: Get all Projects
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CreateProjectDTO'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all Projects
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: Create Projects
+      parameters:
+      - description: project request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateProjectDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new Project
+      tags:
+      - Projects
+  /projects/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Project by ID
+      parameters:
+      - description: project id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Project by ID
+      tags:
+      - Projects
+    get:
+      consumes:
+      - application/json
+      description: Get a project by ID
+      parameters:
+      - description: project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CreateProjectDTO'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      security:
+      - ApiKeyAuth: []
+      summary: Get a project by ID
+      tags:
+      - Projects
+    put:
+      consumes:
+      - application/json
+      description: Update a project by ID
+      parameters:
+      - description: project id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: project request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateProjectDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a project by ID
+      tags:
+      - Projects
   /tenants:
     get:
       consumes:
@@ -163,7 +336,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get a tenant by ID
       tags:
-      - tenants
+      - Tenants
     put:
       consumes:
       - application/json

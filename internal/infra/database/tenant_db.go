@@ -49,9 +49,10 @@ func (tdb *TenantDB) FindAll(page int, limit int, sort string) ([]entity.Tenant,
 }
 
 func (tdb *TenantDB) Delete(id uint64) error {
-	tenant, err := tdb.FindByID(id)
-	if err != nil {
-		return err
-	}
-	return tdb.DB.Delete(tenant).Error
+
+    if err := tdb.DB.Where("tenant_id = ?", id).Delete(&entity.Project{}).Error; err != nil {
+        return err
+    }
+
+    return tdb.DB.Where("id = ?", id).Delete(&entity.Tenant{}).Error
 }

@@ -43,7 +43,7 @@ func TestFindProjectByID(t *testing.T) {
     err := projectDB.Create(project)
     assert.NoError(t, err)
 
-    foundProject, err := projectDB.FindByID(project.ID)
+    foundProject, err := projectDB.FindByID(uint64(project.ID))
     assert.NoError(t, err)
     assert.NotNil(t, foundProject)
     assert.Equal(t, "Project 1", foundProject.Name)
@@ -61,7 +61,7 @@ func TestUpdateProject(t *testing.T) {
     err = projectDB.Update(project)
     assert.NoError(t, err)
 
-    updatedProject, err := projectDB.FindByID(project.ID)
+    updatedProject, err := projectDB.FindByID(uint64(project.ID))
     assert.NoError(t, err)
     assert.Equal(t, "Updated Project", updatedProject.Name)
 }
@@ -89,9 +89,9 @@ func TestDeleteProject(t *testing.T) {
     err := projectDB.Create(project)
     assert.NoError(t, err)
 
-    err = projectDB.Delete(project.ID)
+    err = projectDB.Delete(uint64(project.ID))
     assert.NoError(t, err)
 
-    _, err = projectDB.FindByID(project.ID)
+    _, err = projectDB.FindByID(uint64(project.ID))
     assert.Error(t, err)
 }

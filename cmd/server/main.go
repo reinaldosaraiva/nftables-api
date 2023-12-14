@@ -47,6 +47,7 @@ func main() {
 	log.Println("Config JWTExpireIN: " + strconv.FormatUint(uint64(config.JWTExpireIn), 10))
 	userHandler := handlers.NewUserHandler(database.NewUser(db))
 	tenantHandler := handlers.NewTenantHandler(database.NewTenantDB(db))
+	projectHandler := handlers.NewProjectHandler(database.NewProjectDB(db))
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.WithValue("jwt", config.TokenAuth))
@@ -62,6 +63,15 @@ func main() {
         r.Put("/{id}", tenantHandler.UpdateTenant)
         r.Delete("/{id}", tenantHandler.DeleteTenant)
     })
+	r.Route("/projects", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(config.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Post("/", projectHandler.CreateProject)
+		r.Get("/{id}", projectHandler.GetProject)
+		r.Put("/{id}", projectHandler.UpdateProject)
+		r.Delete("/{id}", projectHandler.DeleteProject)
+		r.Get("/", projectHandler.GetProjects)
+	})
 	r.Post("/users/generate_token", userHandler.GetJWT)
 
 	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/swagger/doc.json")))

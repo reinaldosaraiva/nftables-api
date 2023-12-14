@@ -17,7 +17,7 @@ func (pdb *ProjectDB) Create(project *entity.Project) error {
     return pdb.DB.Create(project).Error
 }
 
-func (pdb *ProjectDB) FindByID(id uint) (*entity.Project, error) {
+func (pdb *ProjectDB) FindByID(id uint64) (*entity.Project, error) {
     var project entity.Project
     err := pdb.DB.Where("id = ?", id).First(&project).Error
     if err != nil {
@@ -27,7 +27,7 @@ func (pdb *ProjectDB) FindByID(id uint) (*entity.Project, error) {
 }
 
 func (pdb *ProjectDB) Update(project *entity.Project) error {
-    _, err := pdb.FindByID(project.ID)
+    _, err := pdb.FindByID(uint64(project.ID))
     if err != nil {
         return err
     }
@@ -48,7 +48,7 @@ func (pdb *ProjectDB) FindAll(page int, limit int, sort string) ([]entity.Projec
     return projects, err
 }
 
-func (pdb *ProjectDB) Delete(id uint) error {
+func (pdb *ProjectDB) Delete(id uint64) error {
     project, err := pdb.FindByID(id)
     if err != nil {
         return err
