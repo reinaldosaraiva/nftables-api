@@ -48,6 +48,8 @@ func main() {
 	userHandler := handlers.NewUserHandler(database.NewUser(db))
 	tenantHandler := handlers.NewTenantHandler(database.NewTenantDB(db))
 	projectHandler := handlers.NewProjectHandler(database.NewProjectDB(db))
+	tableHandler := handlers.NewTableHandler(database.NewTableDB(db))
+	chainHandler := handlers.NewChainHandler(database.NewChainDB(db))
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.WithValue("jwt", config.TokenAuth))
@@ -72,6 +74,27 @@ func main() {
 		r.Delete("/{id}", projectHandler.DeleteProject)
 		r.Get("/", projectHandler.GetProjects)
 	})
+	r.Route("/tables", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(config.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Post("/", tableHandler.CreateTable)
+		r.Get("/{id}", tableHandler.GetTable)
+		r.Put("/{id}", tableHandler.UpdateTable)
+		r.Delete("/{id}", tableHandler.DeleteTable)
+		r.Get("/", tableHandler.GetTables)
+	})
+	r.Route("/chains", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(config.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Post("/", chainHandler.CreateChain)
+		r.Get("/{id}", chainHandler.GetChain)
+		r.Put("/{id}", chainHandler.UpdateChain)
+		r.Delete("/{id}", chainHandler.DeleteChain)
+		r.Get("/", chainHandler.GetChains)
+	})
+
+
+		
 	r.Post("/users/generate_token", userHandler.GetJWT)
 
 	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/swagger/doc.json")))

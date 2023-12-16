@@ -18,7 +18,7 @@ func (tdb *TableDB) Create(table *entity.Table) error {
     return tdb.DB.Create(table).Error
 }
 
-func (tdb *TableDB) FindByID(id uint) (*entity.Table, error) {
+func (tdb *TableDB) FindByID(id uint64) (*entity.Table, error) {
     var table entity.Table
     err := tdb.DB.Where("id = ?", id).First(&table).Error
     if err != nil {
@@ -28,7 +28,8 @@ func (tdb *TableDB) FindByID(id uint) (*entity.Table, error) {
 }
 
 func (tdb *TableDB) Update(table *entity.Table) error {
-    _, err := tdb.FindByID(table.ID)
+    
+    _, err := tdb.FindByID(uint64(table.ID))
     if err != nil {
         return err
     }
@@ -49,7 +50,7 @@ func (tdb *TableDB) FindAll(page int, limit int, sort string) ([]entity.Table, e
     return tables, err
 }
 
-func (tdb *TableDB) Delete(id uint) error {
+func (tdb *TableDB) Delete(id uint64) error {
     table, err := tdb.FindByID(id)
     if err != nil {
         return err

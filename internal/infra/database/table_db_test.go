@@ -44,7 +44,7 @@ func TestFindTableByID(t *testing.T) {
     err := tableDB.Create(table)
     assert.NoError(t, err)
 
-    foundTable, err := tableDB.FindByID(table.ID)
+    foundTable, err := tableDB.FindByID(uint64(table.ID))
     assert.NoError(t, err)
     assert.NotNil(t, foundTable)
     assert.Equal(t, "Table 1", foundTable.Name)
@@ -62,7 +62,7 @@ func TestUpdateTable(t *testing.T) {
     err = tableDB.Update(table)
     assert.NoError(t, err)
 
-    updatedTable, err := tableDB.FindByID(table.ID)
+    updatedTable, err := tableDB.FindByID(uint64(table.ID))
     assert.NoError(t, err)
     assert.Equal(t, "Updated Table", updatedTable.Name)
 }
@@ -90,9 +90,9 @@ func TestDeleteTable(t *testing.T) {
     err := tableDB.Create(table)
     assert.NoError(t, err)
 
-    err = tableDB.Delete(table.ID)
+    err = tableDB.Delete(uint64(table.ID))
     assert.NoError(t, err)
 
-    _, err = tableDB.FindByID(table.ID)
+    _, err = tableDB.FindByID(uint64(table.ID))
     assert.Error(t, err)
 }

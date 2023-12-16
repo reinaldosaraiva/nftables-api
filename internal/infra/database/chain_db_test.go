@@ -1,4 +1,3 @@
-// chain_db_test.go
 package database
 
 import (
@@ -17,10 +16,16 @@ func setupDatabaseForChain(t *testing.T) *gorm.DB {
         t.Fatalf("Failed to open database: %v", err)
     }
 
-    err = db.AutoMigrate(&entity.Chain{}, &entity.Table{}, &entity.Rule{})
+    err = db.AutoMigrate(&entity.Project{}, &entity.Table{}, &entity.Chain{}, &entity.Rule{})
     if err != nil {
         t.Fatalf("Failed to migrate database: %v", err)
     }
+
+    // Criação de um Project e uma Table de teste
+    project := &entity.Project{Name: "Test Project"}
+    db.Create(project)
+    table := &entity.Table{Name: "Test Table"}
+    db.Create(table)
 
     return db
 }
@@ -28,8 +33,8 @@ func setupDatabaseForChain(t *testing.T) *gorm.DB {
 func TestCreateChain(t *testing.T) {
     db := setupDatabaseForChain(t)
     chainDB := NewChainDB(db)
-    chain := &entity.Chain{Name: "Chain 1", Type: "SomeType", State: "Active", ProjectID: 1, TableID: 1} 
 
+    chain := &entity.Chain{Name: "Chain 1", Type: "SomeType", State: "Active", ProjectID: 1, TableID: 1}
     err := chainDB.Create(chain)
     assert.NoError(t, err)
     assert.NotZero(t, chain.ID)
@@ -43,7 +48,7 @@ func TestFindChainByID(t *testing.T) {
     err := chainDB.Create(chain)
     assert.NoError(t, err)
 
-    foundChain, err := chainDB.FindByID(chain.ID)
+    foundChain, err := chainDB.FindByID(uint64(chain.ID))
     assert.NoError(t, err)
     assert.NotNil(t, foundChain)
     assert.Equal(t, "Chain 1", foundChain.Name)
@@ -61,7 +66,7 @@ func TestUpdateChain(t *testing.T) {
     err = chainDB.Update(chain)
     assert.NoError(t, err)
 
-    updatedChain, err := chainDB.FindByID(chain.ID)
+    updatedChain, err := chainDB.FindByID(uint64(chain.ID))
     assert.NoError(t, err)
     assert.Equal(t, "Updated Chain", updatedChain.Name)
 }
@@ -89,9 +94,9 @@ func TestDeleteChain(t *testing.T) {
     err := chainDB.Create(chain)
     assert.NoError(t, err)
 
-    err = chainDB.Delete(chain.ID)
+    err = chainDB.Delete(uint64(chain.ID))
     assert.NoError(t, err)
 
-    _, err = chainDB.FindByID(chain.ID)
+    _, err = chainDB.FindByID(uint64(chain.ID))
     assert.Error(t, err)
 }

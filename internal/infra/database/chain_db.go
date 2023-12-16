@@ -1,6 +1,8 @@
 package database
 
 import (
+	"errors"
+
 	"github.com/reinaldosaraiva/nftables-api/internal/entity"
 	"gorm.io/gorm"
 )
@@ -14,10 +16,40 @@ func NewChainDB(db *gorm.DB) *ChainDB {
 }
 
 func (cdb *ChainDB) Create(chain *entity.Chain) error {
-    return cdb.DB.Create(chain).Error
-}
+    // Inicia uma transação
+    tx := cdb.DB.Begin()
+    if tx.Error != nil {
+        return tx.Error
+    }
 
-func (cdb *ChainDB) FindByID(id uint) (*entity.Chain, error) {
+    // Verifica se o Project existe
+    if err := tx.First(&entity.Project{}, chain.ProjectID).Error; err != nil {
+        tx.Rollback()
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return errors.New("project not found")
+        }
+        return err
+    }
+
+    // Verifica se a Table existe
+    if err := tx.First(&entity.Table{}, chain.TableID).Error; err != nil {
+        tx.Rollback()
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return errors.New("table not found")
+        }
+        return err
+    }
+
+    // Cria a Chain
+    if err := tx.Create(chain).Error; err != nil {
+        tx.Rollback()
+        return err
+    }
+
+    // Confirma a transação
+    return tx.Commit().Error
+}
+func (cdb *ChainDB) FindByID(id uint64) (*entity.Chain, error) {
     var chain entity.Chain
     err := cdb.DB.Where("id = ?", id).First(&chain).Error
     if err != nil {
@@ -27,7 +59,7 @@ func (cdb *ChainDB) FindByID(id uint) (*entity.Chain, error) {
 }
 
 func (cdb *ChainDB) Update(chain *entity.Chain) error {
-    _, err := cdb.FindByID(chain.ID)
+    _, err := cdb.FindByID(uint64(chain.ID))
     if err != nil {
         return err
     }
@@ -48,7 +80,7 @@ func (cdb *ChainDB) FindAll(page int, limit int, sort string) ([]entity.Chain, e
     return chains, err
 }
 
-func (cdb *ChainDB) Delete(id uint) error {
+func (cdb *ChainDB) Delete(id uint64) error {
     chain, err := cdb.FindByID(id)
     if err != nil {
         return err

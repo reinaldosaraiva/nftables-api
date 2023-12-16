@@ -6,7 +6,7 @@ type Project struct {
 	Name        string `json:"name"`
 	TenantID   uint64 `json:"tenant_id"`
 	Tenant    	Tenant 
-	// Chains      []Chain
+	Chains      []Chain
 	gorm.Model
 }
 
@@ -22,4 +22,8 @@ func NewProject(name string, tenantID uint64) (*Project,error) {
 		TenantID: tenantID,
 	}, nil
 
+}
+
+func (p *Project) AddChain(chain *Chain) {
+	p.Chains = append(p.Chains, *chain)
 }
