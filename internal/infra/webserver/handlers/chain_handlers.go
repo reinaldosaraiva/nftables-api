@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -37,7 +38,8 @@ func (h *ChainHandler) CreateChain(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusBadRequest)
         return
     }
-    chain, err := entity.NewChain(chainDTO.Name, chainDTO.Description, chainDTO.Type, chainDTO.State, chainDTO.ProjectID)
+	fmt.Println(chainDTO.TableID)
+    chain, err := entity.NewChain(chainDTO.Name, chainDTO.Description, chainDTO.Type, chainDTO.State, chainDTO.ProjectID, chainDTO.TableID)
     if err != nil {
         w.WriteHeader(http.StatusBadRequest)
         return

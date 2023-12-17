@@ -129,3 +129,4 @@ func TestDeleteTable(t *testing.T) {
     _, err = tableDB.FindByID(uint64(table.ID))
     assert.Error(t, err)
 }
+

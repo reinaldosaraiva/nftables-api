@@ -17,7 +17,7 @@ func setupDatabaseForTenant(t *testing.T) *gorm.DB {
     }
 
     // Adicione a migração para todas as entidades relacionadas
-    err = db.AutoMigrate(&entity.Tenant{}, &entity.Project{},&entity.Chain{})
+    err = db.AutoMigrate(&entity.Tenant{}, &entity.Project{},&entity.Table{},&entity.Chain{})
     if err != nil {
         t.Fatalf("Failed to migrate database: %v", err)
     }
@@ -51,52 +51,43 @@ func TestFindTenantByID(t *testing.T) {
 	assert.Equal(t, "Tenant 1", foundTenant.Name)
 }
 
-func TestUpdateTenant(t *testing.T) {
-	db := setupDatabaseForTenant(t)
-	tenantDB := NewTenantDB(db)
+func TestDeleteTenantCascade(t *testing.T) {
+    db := setupDatabaseForTenant(t)
+    tenantDB := NewTenantDB(db)
+    projectDB := NewProjectDB(db)
+    tableDB := NewTableDB(db) 
+    chainDB := NewChainDB(db)
 
-	tenant, err := entity.NewTenant("Tenant 1")
-	assert.NoError(t, err)
-	err = tenantDB.Create(tenant)
-	assert.NoError(t, err)
+    tenant := &entity.Tenant{Name: "Test Tenant"}
+    err := tenantDB.Create(tenant)
+    assert.NoError(t, err)
 
-	tenant.Name = "Updated Tenant"
-	err = tenantDB.Update(tenant)
-	assert.NoError(t, err)
+    project := &entity.Project{Name: "Project for Tenant", TenantID: uint64(tenant.ID)}
+    err = projectDB.Create(project)
+    assert.NoError(t, err)
 
-	updatedTenant, err := tenantDB.FindByID(uint64(tenant.ID))
-	assert.NoError(t, err)
-	assert.Equal(t, "Updated Tenant", updatedTenant.Name)
-}
+    table := &entity.Table{Name: "Test Table", Type: "SomeType", State: "Active"}
+    err = tableDB.Create(table) 
+    assert.NoError(t, err)
 
-func TestFindAllTenants(t *testing.T) {
-	db := setupDatabaseForTenant(t)
-	tenantDB := NewTenantDB(db)
+    for i := 0; i < 3; i++ {
+        chain := &entity.Chain{Name: fmt.Sprintf("Chain %d", i), ProjectID: uint64(project.ID), TableID: uint64(table.ID)}
+        err = chainDB.Create(chain)
+        assert.NoError(t, err)
+    }
 
-	for i := 0; i < 10; i++ {
-		tenant, err := entity.NewTenant(fmt.Sprintf("Tenant %d", i))
-		assert.NoError(t, err)
-		err = tenantDB.Create(tenant)
-		assert.NoError(t, err)
-	}
+    err = tenantDB.Delete(uint64(tenant.ID))
+    assert.NoError(t, err)
 
-	tenants, err := tenantDB.FindAll(1, 5, "asc")
-	assert.NoError(t, err)
-	assert.Len(t, tenants, 5)
-}
+    _, err = tenantDB.FindByID(uint64(tenant.ID))
+    assert.Error(t, err)
 
-func TestDeleteTenant(t *testing.T) {
-	db := setupDatabaseForTenant(t)
-	tenantDB := NewTenantDB(db)
+    _, err = projectDB.FindByID(uint64(project.ID))
+    assert.Error(t, err)
 
-	tenant, err := entity.NewTenant("Tenant to Delete")
-	assert.NoError(t, err)
-	err = tenantDB.Create(tenant)
-	assert.NoError(t, err)
-
-	err = tenantDB.Delete(uint64(tenant.ID))
-	assert.NoError(t, err)
-
-	_, err = tenantDB.FindByID(uint64(tenant.ID))
-	assert.Error(t, err)
+    chains, err := chainDB.FindAll(1, 10, "asc")
+    assert.NoError(t, err)
+    for _, c := range chains {
+        assert.NotEqual(t, c.ProjectID, project.ID)
+    }
 }

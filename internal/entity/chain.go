@@ -19,7 +19,7 @@ type Chain struct {
 	gorm.Model
 }
 
-func NewChain(name, description, type_name, state string, projectID uint64) (*Chain, error) {
+func NewChain(name, description, type_name, state string, projectID uint64, tableID uint64) (*Chain, error) {
 	if name == "" {
 		return nil, ErrNameRequired
 	}
@@ -41,5 +41,6 @@ func NewChain(name, description, type_name, state string, projectID uint64) (*Ch
 		Type:        type_name,
 		State:       state,
 		ProjectID:   projectID,
+		TableID:    tableID,
 	}, nil
 }

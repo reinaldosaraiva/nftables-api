@@ -17,7 +17,7 @@ func setupDatabaseForProject(t *testing.T) *gorm.DB {
         t.Fatalf("Failed to open database: %v", err)
     }
 
-    err = db.AutoMigrate(&entity.Project{}, &entity.Tenant{}, &entity.Chain{})
+    err = db.AutoMigrate(&entity.Project{}, &entity.Tenant{}, &entity.Table{},&entity.Chain{})
     if err != nil {
         t.Fatalf("Failed to migrate database: %v", err)
     }
@@ -94,4 +94,38 @@ func TestDeleteProject(t *testing.T) {
 
     _, err = projectDB.FindByID(uint64(project.ID))
     assert.Error(t, err)
+}
+
+
+func TestDeleteProjectCascade(t *testing.T) {
+    db := setupDatabaseForProject(t)
+    projectDB := NewProjectDB(db)
+    tableDB := NewTableDB(db) 
+    chainDB := NewChainDB(db)
+
+    project := &entity.Project{Name: "Project with Chains"}
+    err := projectDB.Create(project)
+    assert.NoError(t, err)
+
+    table := &entity.Table{Name: "Test Table", Type: "SomeType", State: "Active"}
+    err = tableDB.Create(table) // Cria uma Table
+    assert.NoError(t, err)
+
+    for i := 0; i < 3; i++ {
+        chain := &entity.Chain{Name: fmt.Sprintf("Chain %d", i), ProjectID: uint64(project.ID), TableID: uint64(table.ID)}
+        err = chainDB.Create(chain)
+        assert.NoError(t, err)
+    }
+
+    err = projectDB.Delete(uint64(project.ID))
+    assert.NoError(t, err)
+
+    _, err = projectDB.FindByID(uint64(project.ID))
+    assert.Error(t, err)
+
+    chains, err := chainDB.FindAll(1, 10, "asc")
+    assert.NoError(t, err)
+    for _, c := range chains {
+        assert.NotEqual(t, c.ProjectID, project.ID)
+    }
 }

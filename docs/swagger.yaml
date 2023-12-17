@@ -10,6 +10,8 @@ definitions:
         type: integer
       state:
         type: string
+      table_id:
+        type: integer
       type:
         type: string
     type: object

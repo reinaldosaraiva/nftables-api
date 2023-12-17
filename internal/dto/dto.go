@@ -36,4 +36,5 @@ type CreateChainDTO struct {
     Type        string `json:"type"`
     State       string `json:"state"`
     ProjectID   uint64 `json:"project_id"`
+	TableID     uint64 `json:"table_id"`
 }

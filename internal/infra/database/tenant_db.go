@@ -49,10 +49,34 @@ func (tdb *TenantDB) FindAll(page int, limit int, sort string) ([]entity.Tenant,
 }
 
 func (tdb *TenantDB) Delete(id uint64) error {
+    tx := tdb.DB.Begin()
+    if tx.Error != nil {
+        return tx.Error
+    }
 
-    if err := tdb.DB.Where("tenant_id = ?", id).Delete(&entity.Project{}).Error; err != nil {
+    var projects []entity.Project
+    if err := tx.Where("tenant_id = ?", id).Find(&projects).Error; err != nil {
+        tx.Rollback()
         return err
     }
 
-    return tdb.DB.Where("id = ?", id).Delete(&entity.Tenant{}).Error
+    for _, project := range projects {
+        if err := tx.Where("project_id = ?", project.ID).Delete(&entity.Chain{}).Error; err != nil {
+            tx.Rollback()
+            return err
+        }
+    }
+
+    if err := tx.Where("tenant_id = ?", id).Delete(&entity.Project{}).Error; err != nil {
+        tx.Rollback()
+        return err
+    }
+
+    if err := tx.Where("id = ?", id).Delete(&entity.Tenant{}).Error; err != nil {
+        tx.Rollback()
+        return err
+    }
+
+    return tx.Commit().Error
 }
+

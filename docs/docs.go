@@ -1160,6 +1160,9 @@ const docTemplate = `{
                 "state": {
                     "type": "string"
                 },
+                "table_id": {
+                    "type": "integer"
+                },
                 "type": {
                     "type": "string"
                 }

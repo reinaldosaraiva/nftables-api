@@ -1,0 +1,28 @@
+# Primeiro, faça uma solicitação para gerar o token
+POST http://localhost:8000/users/generate_token HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "j@j.com",
+    "password": "12345678"
+}
+
+> {% client.global.set("auth_token", response.body.token) %}
+
+###
+
+# Agora, use o token gerado nas solicitações subsequentes
+GET http://localhost:8000/tenants HTTP/1.1
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+
+# Outra solicitação usando o mesmo token
+POST http://localhost:8000/tenants HTTP/1.1
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "name": "Novo Tenant"
+}
