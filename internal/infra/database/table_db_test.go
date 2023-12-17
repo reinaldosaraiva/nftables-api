@@ -17,23 +17,56 @@ func setupDatabaseForTable(t *testing.T) *gorm.DB {
         t.Fatalf("Failed to open database: %v", err)
     }
 
-    // Adicione a migração para todas as entidades relacionadas
-    err = db.AutoMigrate(&entity.Table{}, &entity.Project{}, &entity.Tenant{}, &entity.Chain{})
+    err = db.AutoMigrate(&entity.Project{}, &entity.Chain{}, &entity.Table{})
     if err != nil {
         t.Fatalf("Failed to migrate database: %v", err)
+    }
+
+    testProject := entity.Project{Name: "Test Project"}
+    if err := db.Create(&testProject).Error; err != nil {
+        t.Fatalf("Failed to create test project: %v", err)
     }
 
     return db
 }
 
+
 func TestCreateTable(t *testing.T) {
     db := setupDatabaseForTable(t)
     tableDB := NewTableDB(db)
-    table := &entity.Table{Name: "Table 1", Type: "SomeType", State: "Active" } // Suponha que TenantID 1 exista
+    table := &entity.Table{Name: "Table 1", Type: "SomeType", State: "Active" } 
 
     err := tableDB.Create(table)
     assert.NoError(t, err)
     assert.NotZero(t, table.ID)
+}
+
+func TestCreateTableWithChains(t *testing.T) {
+    db := setupDatabaseForTable(t)
+    tableDB := NewTableDB(db)
+
+    chains := []entity.Chain{
+        {Name: "Chain 1", Type: "Type1", State: "Active", ProjectID: 1},
+        {Name: "Chain 2", Type: "Type2", State: "Active", ProjectID: 1},
+    }
+
+    for _, chain := range chains {
+        err := db.Create(&chain).Error
+        assert.NoError(t, err)
+    }
+
+    table := &entity.Table{
+        Name: "Table 1", 
+        Type: "SomeType", 
+        State: "Active",
+        Chains: chains, 
+    }
+
+    err := tableDB.Create(table)
+    assert.NoError(t, err)
+    assert.NotZero(t, table.ID)
+
+    assert.Len(t, table.Chains, len(chains))
 }
 
 func TestFindTableByID(t *testing.T) {
