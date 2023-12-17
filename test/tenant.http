@@ -10,19 +10,14 @@ Content-Type: application/json
 }
 
 ###
-
-# Usando o token gerado nas solicitações subsequentes
 GET {{baseUrl}}/tenants HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 ###
-
-# Outra solicitação usando o mesmo token
 POST {{baseUrl}}/tenants HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
-
 {
     "name": "Novo Tenant"
 }
