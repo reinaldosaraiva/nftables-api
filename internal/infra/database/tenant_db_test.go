@@ -51,6 +51,21 @@ func TestFindTenantByID(t *testing.T) {
 	assert.Equal(t, "Tenant 1", foundTenant.Name)
 }
 
+func TestFindTenantByName(t *testing.T) {
+    db := setupDatabaseForTenant(t)
+    tenantDB := NewTenantDB(db)
+
+    tenant, err := entity.NewTenant("Tenant 1")
+    assert.NoError(t, err)
+    err = tenantDB.Create(tenant)
+    assert.NoError(t, err)
+
+    foundTenant, err := tenantDB.FindByName("Tenant 1")
+    assert.NoError(t, err)
+    assert.NotNil(t, foundTenant)
+    assert.Equal(t, "Tenant 1", foundTenant.Name)
+}
+
 func TestDeleteTenantCascade(t *testing.T) {
     db := setupDatabaseForTenant(t)
     tenantDB := NewTenantDB(db)

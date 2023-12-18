@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/reinaldosaraiva/nftables-api/internal/entity"
 	"gorm.io/gorm"
 )
@@ -20,6 +22,16 @@ func (tdb *TenantDB) Create(tenant *entity.Tenant) error {
 func (tdb *TenantDB) FindByID(id uint64) (*entity.Tenant, error) {
 	var tenant entity.Tenant
 	err := tdb.DB.Where("id = ?", id).First(&tenant).Error
+	if err != nil {
+		return nil, err
+	}
+	return &tenant, nil
+}
+
+func (tdb *TenantDB) FindByName(name string) (*entity.Tenant, error) {
+	var tenant entity.Tenant
+	err := tdb.DB.Where("name = ?", name).First(&tenant).Error
+	fmt.Println(name)
 	if err != nil {
 		return nil, err
 	}

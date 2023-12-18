@@ -27,6 +27,15 @@ func (tdb *TableDB) FindByID(id uint64) (*entity.Table, error) {
     return &table, nil
 }
 
+func (tdb *TableDB) FindByName(name string) (*entity.Table, error) {
+    var table entity.Table
+    err := tdb.DB.Where("name = ?", name).First(&table).Error
+    if err != nil {
+        return nil, err
+    }
+    return &table, nil
+}
+
 func (tdb *TableDB) Update(table *entity.Table) error {
     
     _, err := tdb.FindByID(uint64(table.ID))

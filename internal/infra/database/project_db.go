@@ -26,6 +26,15 @@ func (pdb *ProjectDB) FindByID(id uint64) (*entity.Project, error) {
     return &project, nil
 }
 
+func (pdb *ProjectDB) FindByName(name string) (*entity.Project, error) {
+    var project entity.Project
+    err := pdb.DB.Where("name = ?", name).First(&project).Error
+    if err != nil {
+        return nil, err
+    }
+    return &project, nil
+}
+
 func (pdb *ProjectDB) Update(project *entity.Project) error {
     _, err := pdb.FindByID(uint64(project.ID))
     if err != nil {

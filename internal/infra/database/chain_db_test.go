@@ -54,6 +54,20 @@ func TestFindChainByID(t *testing.T) {
     assert.Equal(t, "Chain 1", foundChain.Name)
 }
 
+func TestFindChainByName(t *testing.T) {
+    db := setupDatabaseForChain(t)
+    chainDB := NewChainDB(db)
+
+    chain := &entity.Chain{Name: "Chain 1", Type: "SomeType", State: "Active", ProjectID: 1, TableID: 1}
+    err := chainDB.Create(chain)
+    assert.NoError(t, err)
+
+    foundChain, err := chainDB.FindByName("Chain 1")
+    assert.NoError(t, err)
+    assert.NotNil(t, foundChain)
+    assert.Equal(t, "Chain 1", foundChain.Name)
+}
+
 func TestUpdateChain(t *testing.T) {
     db := setupDatabaseForChain(t)
     chainDB := NewChainDB(db)

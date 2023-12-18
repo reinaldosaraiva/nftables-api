@@ -58,6 +58,15 @@ func (cdb *ChainDB) FindByID(id uint64) (*entity.Chain, error) {
     return &chain, nil
 }
 
+func (cdb *ChainDB) FindByName(name string) (*entity.Chain, error) {
+    var chain entity.Chain
+    err := cdb.DB.Where("name = ?", name).First(&chain).Error
+    if err != nil {
+        return nil, err
+    }
+    return &chain, nil
+}
+
 func (cdb *ChainDB) Update(chain *entity.Chain) error {
     _, err := cdb.FindByID(uint64(chain.ID))
     if err != nil {

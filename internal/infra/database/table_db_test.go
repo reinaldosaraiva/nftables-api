@@ -100,6 +100,19 @@ func TestUpdateTable(t *testing.T) {
     assert.Equal(t, "Updated Table", updatedTable.Name)
 }
 
+func TestFindTableByName(t *testing.T) {
+    db := setupDatabaseForTable(t)
+    tableDB := NewTableDB(db)
+
+    table := &entity.Table{Name: "Table 1", Type: "SomeType", State: "Active"}
+    err := tableDB.Create(table)
+    assert.NoError(t, err)
+
+    foundTable, err := tableDB.FindByName("Table 1")
+    assert.NoError(t, err)
+    assert.NotNil(t, foundTable)
+    assert.Equal(t, "Table 1", foundTable.Name)
+}
 func TestFindAllTables(t *testing.T) {
     db := setupDatabaseForTable(t)
     tableDB := NewTableDB(db)

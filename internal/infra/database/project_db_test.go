@@ -49,6 +49,20 @@ func TestFindProjectByID(t *testing.T) {
     assert.Equal(t, "Project 1", foundProject.Name)
 }
 
+func TestFindProjectByName(t *testing.T) {
+    db := setupDatabaseForProject(t)
+    projectDB := NewProjectDB(db)
+
+    project := &entity.Project{Name: "Project 1", TenantID: 1}
+    err := projectDB.Create(project)
+    assert.NoError(t, err)
+
+    foundProject, err := projectDB.FindByName("Project 1")
+    assert.NoError(t, err)
+    assert.NotNil(t, foundProject)
+    assert.Equal(t, "Project 1", foundProject.Name)
+}
+
 func TestUpdateProject(t *testing.T) {
     db := setupDatabaseForProject(t)
     projectDB := NewProjectDB(db)

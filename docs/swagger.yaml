@@ -733,6 +733,65 @@ paths:
       summary: Update a tenant by ID
       tags:
       - Tenants
+  /tenants/filter:
+    get:
+      consumes:
+      - application/json
+      description: Get tenants filtered by ID or name
+      parameters:
+      - description: Tenant ID
+        in: query
+        name: id
+        type: integer
+      - description: Tenant Name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CreateTenantDTO'
+            type: array
+        "400":
+          description: Invalid parameter format
+        "404":
+          description: Tenant not found
+      security:
+      - ApiKeyAuth: []
+      summary: Get tenants with optional filters
+      tags:
+      - Tenants
+  /tenants/name/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get a tenant by name
+      parameters:
+      - description: tenant name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CreateTenantDTO'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      security:
+      - ApiKeyAuth: []
+      summary: Get a tenant by name
+      tags:
+      - Tenants
   /users:
     post:
       consumes:

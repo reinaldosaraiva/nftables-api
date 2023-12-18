@@ -15,12 +15,34 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 ###
+GET {{baseUrl}}/tenants/5 HTTP/1.1
+Authorization: Bearer {{generateToken.response.body.access_token}}
+Content-Type: application/json
+
+
+###
+GET {{baseUrl}}/tenants/name/tenant_3 HTTP/1.1
+Authorization: Bearer {{generateToken.response.body.access_token}}
+Content-Type: application/json
+
+###
+GET {{baseUrl}}/tenants/filter?name=tenant_3 HTTP/1.1
+Authorization: Bearer {{generateToken.response.body.access_token}}
+Content-Type: application/json
+
+###
+GET {{baseUrl}}/tenants/filter?id=4 HTTP/1.1
+Authorization: Bearer {{generateToken.response.body.access_token}}
+Content-Type: application/json
+
+
+###
 POST {{baseUrl}}/tenants HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "Novo Tenant"
+    "name": "tenant_3"
 }
 ###
 PUT {{baseUrl}}/tenants/3 HTTP/1.1
@@ -28,7 +50,7 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "Tenant Atualizado"
+    "name": "Tenant Updated"
 }
 
 ###

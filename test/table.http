@@ -27,15 +27,27 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 ###
+GET {{baseUrl}}/tables/1 HTTP/1.1
+Authorization: Bearer {{generateToken.response.body.access_token}}
+Content-Type: application/json
+
+###
+GET {{baseUrl}}/tables/table_1 HTTP/1.1
+Authorization: Bearer {{generateToken.response.body.access_token}}
+Content-Type: application/json
+
+###
 PUT {{baseUrl}}/tables/1 HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "Table Atualizada",
-    "type": "Novo Tipo",
-    "state": "Novo Estado"
+    "name": "Table Updated",
+    "type": "New Type",
+    "state": "New State",
 }
+
+
 
 ###
 DELETE {{baseUrl}}/tables/1 HTTP/1.1

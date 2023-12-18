@@ -7,6 +7,8 @@ type TableInterface interface {
 
     FindByID(id uint64) (*entity.Table, error)
 
+    FindByName(name string) (*entity.Table, error)
+
     FindAll(page, limit int, sort string) ([]entity.Table, error)
 
     Update(table *entity.Table) error
@@ -18,6 +20,8 @@ type ChainInterface interface {
     Create(chain *entity.Chain) error
 
     FindByID(id uint64) (*entity.Chain, error)
+
+    FindByName(name string) (*entity.Chain, error)
 
     FindAll(page, limit int, sort string) ([]entity.Chain, error)
 
@@ -31,6 +35,8 @@ type RuleInterface interface {
 
     FindByID(id uint64) (*entity.Rule, error)
 
+    FindByName(name string) (*entity.Rule, error)
+
     FindAll(page, limit int, sort string) ([]entity.Rule, error)
 
     Update(rule *entity.Rule) error
@@ -43,6 +49,8 @@ type TenantInterface interface {
 
     FindByID(id uint64) (*entity.Tenant, error)
 
+    FindByName(name string) (*entity.Tenant, error)
+
     FindAll(page, limit int, sort string) ([]entity.Tenant, error)
 
     Update(tenant *entity.Tenant) error
@@ -50,21 +58,17 @@ type TenantInterface interface {
     Delete(id uint64) error
 }
 
-// ProjectInterface defines the interface for interacting with Project entities.
 type ProjectInterface interface {
-    // Create creates a new Project in the database.
     Create(project *entity.Project) error
 
-    // FindByID finds a Project by its ID.
     FindByID(id uint64) (*entity.Project, error)
 
-    // FindAll retrieves all Projects from the database.
+    FindByName(name string) (*entity.Project, error)
+
     FindAll(page, limit int, sort string) ([]entity.Project, error)
 
-    // Update updates a Project in the database.
     Update(project *entity.Project) error
 
-    // Delete deletes a Project from the database.
     Delete(id uint64) error
 }
 

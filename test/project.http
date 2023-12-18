@@ -15,10 +15,10 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "Nova Table",
-    "description": "Descrição da Table",
-    "type": "Tipo da Table",
-    "state": "Estado da Table"
+    "name": "New Table",
+    "description": "Description da Table",
+    "type": "Example type",
+    "state": "Example State"
 }
 
 ###
@@ -34,10 +34,10 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "Table Atualizada",
-    "description": "Nova Descrição",
-    "type": "Novo Tipo",
-    "state": "Novo Estado"
+    "name": "Table Updated",
+    "description": "Description Updated",
+    "type": "New Type",
+    "state": "New State"
 }
 
 ###

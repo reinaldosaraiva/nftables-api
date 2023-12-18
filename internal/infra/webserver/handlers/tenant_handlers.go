@@ -49,6 +49,7 @@ func (h *TenantHandler) CreateTenant(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 }
+
 // Get a tenant by ID godoc
 // @Summary Get a tenant by ID
 // @Description Get a tenant by ID
@@ -60,7 +61,7 @@ func (h *TenantHandler) CreateTenant(w http.ResponseWriter, r *http.Request) {
 // @Failure 400,404
 // @Router /tenants/{id} [get]
 // @Security ApiKeyAuth
-func (h *TenantHandler) GetTenant(w http.ResponseWriter, r *http.Request) {
+func (h *TenantHandler) GetTenantByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
@@ -76,6 +77,79 @@ func (h *TenantHandler) GetTenant(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(tenant)
+}
+
+// Get a tenant by name godoc
+// @Summary Get a tenant by name
+// @Description Get a tenant by name
+// @Tags Tenants
+// @Accept  json
+// @Produce  json
+// @Param name path string true "tenant name"
+// @Success 200 {object} dto.CreateTenantDTO 
+// @Failure 400,404
+// @Router /tenants/name/{name} [get]
+// @Security ApiKeyAuth
+func (h *TenantHandler) GetTenantByName(w http.ResponseWriter, r *http.Request) {
+    name := chi.URLParam(r, "name")
+	tenant, err := h.TenantDB.FindByName(name)
+    if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(tenant)
+}
+
+// Get tenants with filters godoc
+// @Summary Get tenants with optional filters
+// @Description Get tenants filtered by ID or name
+// @Tags Tenants
+// @Accept  json
+// @Produce  json
+// @Param id query int false "Tenant ID"
+// @Param name query string false "Tenant Name"
+// @Success 200 {array} dto.CreateTenantDTO 
+// @Failure 400 "Invalid parameter format"
+// @Failure 404 "Tenant not found"
+// @Router /tenants/filter [get]
+// @Security ApiKeyAuth
+func (h *TenantHandler) GetTenantsWithFilters(w http.ResponseWriter, r *http.Request) {
+	queryValues := r.URL.Query()
+    name := queryValues.Get("name")
+    idStr := queryValues.Get("id")
+
+    // var tenantDTO dto.CreateTenantDTO
+	var tenant *entity.Tenant
+    var err error
+
+    if idStr != "" {
+        id, err := strconv.ParseUint(idStr, 10, 32)
+        if err != nil {
+            w.WriteHeader(http.StatusBadRequest)
+            return
+        }
+        tenant, err = h.TenantDB.FindByID(uint64(id))
+        if err != nil {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        
+    } else if name != "" {
+        tenant, err = h.TenantDB.FindByName(name)
+        if err != nil {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        
+    } else {
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
+
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(tenant)
 }
 
 // Update a tenant by ID godoc
