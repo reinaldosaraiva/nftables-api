@@ -44,6 +44,7 @@ Content-Type: application/json
 {
     "name": "tenant_3"
 }
+
 ###
 PUT {{baseUrl}}/tenants/3 HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}

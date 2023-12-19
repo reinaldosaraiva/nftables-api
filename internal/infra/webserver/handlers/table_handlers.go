@@ -79,6 +79,56 @@ func (h *TableHandler) GetTable(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(table)
 }
 
+
+// GetTablesWithFilters godoc
+// @Summary Get tables with optional filters
+// @Description Get tables filtered by ID or name
+// @Tags Tables
+// @Accept  json
+// @Produce  json
+// @Param id query int false "Table ID"
+// @Param name query string false "Table Name"
+// @Success 200 {array} dto.CreateTableDTO 
+// @Failure 400 "Invalid parameter format"
+// @Failure 404 "Table not found"
+// @Router /tables/filter [get]
+// @Security ApiKeyAuth
+func (h *TableHandler) GetTablesWithFilters(w http.ResponseWriter, r *http.Request) {
+    queryValues := r.URL.Query()
+    name := queryValues.Get("name")
+    idStr := queryValues.Get("id")
+
+    var table *entity.Table
+    var err error
+
+    if idStr != "" {
+        id, err := strconv.ParseUint(idStr, 10, 32)
+        if err != nil {
+            w.WriteHeader(http.StatusBadRequest)
+            return
+        }
+        table, err = h.TableDB.FindByID(uint64(id))
+        if err != nil {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        
+    } else if name != "" {
+        table, err = h.TableDB.FindByName(name)
+        if err != nil {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        
+    } else {
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
+
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(table)
+}
+
 // UpdateTable godoc
 // @Summary Update a table by ID
 // @Description Update a table by ID

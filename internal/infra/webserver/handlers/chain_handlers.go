@@ -81,6 +81,55 @@ func (h *ChainHandler) GetChain(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(chain)
 }
 
+// GetChainsWithFilters godoc
+// @Summary Get chains with optional filters
+// @Description Get chains filtered by ID or name
+// @Tags Chains
+// @Accept  json
+// @Produce  json
+// @Param id query int false "Chain ID"
+// @Param name query string false "Chain Name"
+// @Success 200 {array} dto.CreateChainDTO 
+// @Failure 400 "Invalid parameter format"
+// @Failure 404 "Chain not found"
+// @Router /chains/filter [get]
+// @Security ApiKeyAuth
+func (h *ChainHandler) GetChainsWithFilters(w http.ResponseWriter, r *http.Request) {
+    queryValues := r.URL.Query()
+    name := queryValues.Get("name")
+    idStr := queryValues.Get("id")
+
+    var chain *entity.Chain
+    var err error
+
+    if idStr != "" {
+        id, err := strconv.ParseUint(idStr, 10, 32)
+        if err != nil {
+            w.WriteHeader(http.StatusBadRequest)
+            return
+        }
+        chain, err = h.ChainDB.FindByID(uint64(id))
+        if err != nil {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        
+    } else if name != "" {
+        chain, err = h.ChainDB.FindByName(name)
+        if err != nil {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        
+    } else {
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
+
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(chain)
+}
+
 // UpdateChain godoc
 // @Summary Update a chain by ID
 // @Description Update a chain by ID

@@ -10,38 +10,48 @@ Content-Type: application/json
 }
 
 ###
-POST {{baseUrl}}/projects HTTP/1.1
+POST {{baseUrl}}/chains HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "New Project",
+    "name": "New Chain",
+    "description": "This is a new chain",
+    "type": "Type of the chain",
+    "state": "State of the chain",
+    "project_id": 1,
+    "table_id": 1
 }
 
 ###
-GET {{baseUrl}}/projects HTTP/1.1
+GET {{baseUrl}}/chains HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 ###
-GET {{baseUrl}}/projects/filter?name=input HTTP/1.1
+GET {{baseUrl}}/chains/filter?name=input HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 ###
-GET {{baseUrl}}/projects/filter?id=4 HTTP/1.1
+GET {{baseUrl}}/chains/filter?id=4 HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 ###
-PUT {{baseUrl}}/projects/1 HTTP/1.1
+PUT {{baseUrl}}/chains/1 HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "Project Updated",
+    "name": "Chain Updated",
+    "description": "This chain has been updated",
+    "type": "Updated type",
+    "state": "Updated state",
+    "project_id": 2,
+    "table_id": 2
 }
 
 ###
-DELETE {{baseUrl}}/projects/1 HTTP/1.1
+DELETE {{baseUrl}}/chains/1 HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}

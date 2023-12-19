@@ -79,6 +79,55 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(project)
 }
 
+// GetProjectsWithFilters godoc
+// @Summary Get projects with optional filters
+// @Description Get projects filtered by ID or name
+// @Tags Projects
+// @Accept  json
+// @Produce  json
+// @Param id query int false "Project ID"
+// @Param name query string false "Project Name"
+// @Success 200 {array} dto.CreateProjectDTO 
+// @Failure 400 "Invalid parameter format"
+// @Failure 404 "Project not found"
+// @Router /projects/filter [get]
+// @Security ApiKeyAuth
+func (h *ProjectHandler) GetProjectsWithFilters(w http.ResponseWriter, r *http.Request) {
+    queryValues := r.URL.Query()
+    name := queryValues.Get("name")
+    idStr := queryValues.Get("id")
+
+    var project *entity.Project
+    var err error
+
+    if idStr != "" {
+        id, err := strconv.ParseUint(idStr, 10, 32)
+        if err != nil {
+            w.WriteHeader(http.StatusBadRequest)
+            return
+        }
+        project, err = h.ProjectDB.FindByID(uint64(id))
+        if err != nil {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        
+    } else if name != "" {
+        project, err = h.ProjectDB.FindByName(name)
+        if err != nil {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        
+    } else {
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
+
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(project)
+}
+
 // Update a project by ID godoc
 // @Summary Update a project by ID
 // @Description Update a project by ID

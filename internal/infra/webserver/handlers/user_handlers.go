@@ -99,7 +99,6 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	
 }
 
-//Get User with email by body request
 func (h *UserHandler) GetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	email := chi.URLParam(r, "email")
 	if email == "" {
