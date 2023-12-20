@@ -37,3 +37,19 @@ type CreateChainDTO struct {
     ProjectID   uint64 `json:"project_id"`
 	TableID     uint64 `json:"table_id"`
 }
+type CreateRuleDTO struct {
+    ChainID    uint64 `json:"chain_id"`
+    Protocol   string `json:"protocol"`
+    Port       int    `json:"port"`
+    Action     string `json:"action"`
+}
+
+type CreateServiceDTO struct {
+    Name   string `json:"name"`
+    Port   int    `json:"port"`
+}
+
+type CreateNetworkObjectDTO struct {
+    Name    string `json:"name"`
+    Address string `json:"address"`
+}
