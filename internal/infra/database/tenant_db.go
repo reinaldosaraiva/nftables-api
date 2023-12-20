@@ -21,7 +21,7 @@ func (tdb *TenantDB) Create(tenant *entity.Tenant) error {
 
 func (tdb *TenantDB) FindByID(id uint64) (*entity.Tenant, error) {
 	var tenant entity.Tenant
-	err := tdb.DB.Where("id = ?", id).First(&tenant).Error
+	err := tdb.DB.Preload("Projects").Where("id = ?", id).First(&tenant).Error
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func (tdb *TenantDB) FindByID(id uint64) (*entity.Tenant, error) {
 
 func (tdb *TenantDB) FindByName(name string) (*entity.Tenant, error) {
 	var tenant entity.Tenant
-	err := tdb.DB.Where("name = ?", name).First(&tenant).Error
+	err := tdb.DB.Preload("Projects").Where("name = ?", name).First(&tenant).Error
 	fmt.Println(name)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (tdb *TenantDB) FindAll(page int, limit int, sort string) ([]entity.Tenant,
 		sort = "asc"
 	}
 	if page != 0 && limit != 0 {
-		err = tdb.DB.Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&tenants).Error
+		err = tdb.DB.Preload("Projects").Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&tenants).Error
 	} else {
 		err = tdb.DB.Order("CreatedAt " + sort).Find(&tenants).Error
 	}

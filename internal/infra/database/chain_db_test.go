@@ -39,9 +39,9 @@ func TestCreateChain(t *testing.T) {
         err       error
     }{
         {"PREROUTING", "filter", 1, "ACCEPT", 1, nil},
-        // {"INPUT", "filter", 0, "ACCEPT", 1, nil},
-        // {"input", "filter", 0, "DROP", 4, nil},
-        // {"output", "filter", 0, "ACCEPT", 4, nil},
+        {"INPUT", "filter", 1, "ACCEPT", 1, nil},
+        {"input", "filter", 2, "DROP", 1, nil},
+        {"output", "filter", 2, "ACCEPT", 1, nil},
     }
 
 
