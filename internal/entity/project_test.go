@@ -32,10 +32,9 @@ func TestNewProject(t *testing.T) {
 }
 
 
-// Teste new project with  chain
 func TestNewProjectWithChain(t *testing.T) {
-	// {"My chain", "This is a chain", "Filtering", "Active", 1, nil},
-	chain, _ := entity.NewChain("input", "filter","This is a chain","Active", 1,1)
+	
+	chain, _ := entity.NewChain("INPUT", "filter","accept",1,1,1)
 	project, _ := entity.NewProject("My project", 1)
 	project.AddChain(chain)
 	assert.Equal(t, len(project.Chains), 1)

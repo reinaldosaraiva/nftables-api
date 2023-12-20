@@ -121,7 +121,7 @@ func TestDeleteProjectCascade(t *testing.T) {
     err := projectDB.Create(project)
     assert.NoError(t, err)
 
-    table := &entity.Table{Name: "Test Table", Type: "SomeType", State: "Active"}
+    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle",}
     err = tableDB.Create(table) // Cria uma Table
     assert.NoError(t, err)
 

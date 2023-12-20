@@ -21,58 +21,89 @@ func setupDatabaseForChain(t *testing.T) *gorm.DB {
         t.Fatalf("Failed to migrate database: %v", err)
     }
 
-    // Criação de um Project e uma Table de teste
-    project := &entity.Project{Name: "Test Project"}
+    project := &entity.Project{Name: "Project 1", TenantID: 1}
     db.Create(project)
-    table := &entity.Table{Name: "Test Table"}
+    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle",}
     db.Create(table)
 
     return db
 }
 
 func TestCreateChain(t *testing.T) {
+    tests := []struct {
+        name      string
+        type_name string
+        priority  int
+        policy    string
+        tableID   uint64
+        err       error
+    }{
+        {"PREROUTING", "filter", 1, "ACCEPT", 1, nil},
+        // {"INPUT", "filter", 0, "ACCEPT", 1, nil},
+        // {"input", "filter", 0, "DROP", 4, nil},
+        // {"output", "filter", 0, "ACCEPT", 4, nil},
+    }
+
+
     db := setupDatabaseForChain(t)
     chainDB := NewChainDB(db)
 
-    chain := &entity.Chain{Name: "Chain 1", Type: "SomeType", State: "Active", ProjectID: 1, TableID: 1}
-    err := chainDB.Create(chain)
-    assert.NoError(t, err)
-    assert.NotZero(t, chain.ID)
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            chain := &entity.Chain{
+                Name:      tt.name,
+                Type:      tt.type_name,
+                Priority:  tt.priority,
+                Policy:    tt.policy,
+                TableID:   tt.tableID,
+                ProjectID: 1,
+            }
+            err := chainDB.Create(chain)
+            if tt.err != nil {
+                assert.Error(t, err)
+                assert.Equal(t, tt.err, err)
+            } else {
+                assert.NoError(t, err)
+                assert.NotZero(t, chain.ID)
+            }
+        })
+    }
 }
+
 
 func TestFindChainByID(t *testing.T) {
     db := setupDatabaseForChain(t)
     chainDB := NewChainDB(db)
 
-    chain := &entity.Chain{Name: "Chain 1", Type: "SomeType", State: "Active", ProjectID: 1, TableID: 1}
+    chain := &entity.Chain{Name: "INPUT", Type: "filter",Priority: 1 , ProjectID: 1, TableID: 1}
     err := chainDB.Create(chain)
     assert.NoError(t, err)
 
     foundChain, err := chainDB.FindByID(uint64(chain.ID))
     assert.NoError(t, err)
     assert.NotNil(t, foundChain)
-    assert.Equal(t, "Chain 1", foundChain.Name)
+    assert.Equal(t, "INPUT", foundChain.Name)
 }
 
 func TestFindChainByName(t *testing.T) {
     db := setupDatabaseForChain(t)
     chainDB := NewChainDB(db)
 
-    chain := &entity.Chain{Name: "Chain 1", Type: "SomeType", State: "Active", ProjectID: 1, TableID: 1}
+    chain := &entity.Chain{Name: "INPUT", Type: "filter",Priority: 1 , ProjectID: 1, TableID: 1}
     err := chainDB.Create(chain)
     assert.NoError(t, err)
 
-    foundChain, err := chainDB.FindByName("Chain 1")
+    foundChain, err := chainDB.FindByName("INPUT")
     assert.NoError(t, err)
     assert.NotNil(t, foundChain)
-    assert.Equal(t, "Chain 1", foundChain.Name)
+    assert.Equal(t, "INPUT", foundChain.Name)
 }
 
 func TestUpdateChain(t *testing.T) {
     db := setupDatabaseForChain(t)
     chainDB := NewChainDB(db)
 
-    chain := &entity.Chain{Name: "Chain 1", Type: "SomeType", State: "Active", ProjectID: 1, TableID: 1}
+    chain := &entity.Chain{Name: "INPUT", Type: "filter",Priority: 1 , ProjectID: 1, TableID: 1}
     err := chainDB.Create(chain)
     assert.NoError(t, err)
 
@@ -90,7 +121,7 @@ func TestFindAllChains(t *testing.T) {
     chainDB := NewChainDB(db)
 
     for i := 0; i < 10; i++ {
-        chain := &entity.Chain{Name: fmt.Sprintf("Chain %d", i), Type: "SomeType", State: "Active", ProjectID: 1, TableID: 1}
+        chain := &entity.Chain{Name: fmt.Sprintf("Chain %d", i),  Type: "filter",Priority: 1, ProjectID: 1, TableID: 1}
         err := chainDB.Create(chain)
         assert.NoError(t, err)
     }
@@ -104,7 +135,7 @@ func TestDeleteChain(t *testing.T) {
     db := setupDatabaseForChain(t)
     chainDB := NewChainDB(db)
 
-    chain := &entity.Chain{Name: "Chain to Delete", Type: "SomeType", State: "Active", ProjectID: 1, TableID: 1}
+    chain := &entity.Chain{Name: "INPUT", Type: "filter",Priority: 1 , ProjectID: 1, TableID: 1}
     err := chainDB.Create(chain)
     assert.NoError(t, err)
 

@@ -16,7 +16,7 @@ func setupDatabaseForTenant(t *testing.T) *gorm.DB {
         t.Fatalf("Failed to open database: %v", err)
     }
 
-    // Adicione a migração para todas as entidades relacionadas
+
     err = db.AutoMigrate(&entity.Tenant{}, &entity.Project{},&entity.Table{},&entity.Chain{})
     if err != nil {
         t.Fatalf("Failed to migrate database: %v", err)
@@ -81,7 +81,7 @@ func TestDeleteTenantCascade(t *testing.T) {
     err = projectDB.Create(project)
     assert.NoError(t, err)
 
-    table := &entity.Table{Name: "Test Table", Type: "SomeType", State: "Active"}
+    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle",}
     err = tableDB.Create(table) 
     assert.NoError(t, err)
 

@@ -128,6 +128,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/chains/filter": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get chains filtered by ID or name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chains"
+                ],
+                "summary": "Get chains with optional filters",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Chain ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Chain Name",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CreateChainDTO"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameter format"
+                    },
+                    "404": {
+                        "description": "Chain not found"
+                    }
+                }
+            }
+        },
         "/chains/{id}": {
             "get": {
                 "security": [
@@ -389,6 +440,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/projects/filter": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get projects filtered by ID or name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get projects with optional filters",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project Name",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CreateProjectDTO"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameter format"
+                    },
+                    "404": {
+                        "description": "Project not found"
+                    }
+                }
+            }
+        },
         "/projects/{id}": {
             "get": {
                 "security": [
@@ -646,6 +748,57 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/handlers.Error"
                         }
+                    }
+                }
+            }
+        },
+        "/tables/filter": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get tables filtered by ID or name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tables"
+                ],
+                "summary": "Get tables with optional filters",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Table ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Table Name",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.CreateTableDTO"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameter format"
+                    },
+                    "404": {
+                        "description": "Table not found"
                     }
                 }
             }

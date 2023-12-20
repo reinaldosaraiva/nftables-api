@@ -37,7 +37,7 @@ func (h *TableHandler) CreateTable(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusBadRequest)
         return
     }
-    table, err := entity.NewTable(tableDTO.Name, tableDTO.Description, tableDTO.Type, tableDTO.State)
+    table, err := entity.NewTable(tableDTO.Name, tableDTO.Description, tableDTO.Type, tableDTO.Priority, tableDTO.Comment)
     if err != nil {
         w.WriteHeader(http.StatusBadRequest)
         return

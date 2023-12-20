@@ -1,16 +1,14 @@
 package entity
 
 import (
-	"errors"
-
 	"gorm.io/gorm"
 )
 
 type Chain struct {
 	Name        string `json:"name"`
-	Description string `json:"description"`
 	Type        string `json:"type"`
-	State       string `json:"state"`
+	Priority	int    `json:"priority"`
+	Policy		string `json:"policy"`
 	ProjectID 	uint64  `json:"project_id"`
 	Project	Project
 	TableID 	uint64  `json:"table_id"`
@@ -19,27 +17,27 @@ type Chain struct {
 	gorm.Model
 }
 
-func NewChain(name, description, type_name, state string, projectID uint64, tableID uint64) (*Chain, error) {
+func NewChain(name, type_name, policy string, priority int, projectID uint64, tableID uint64) (*Chain, error) {
 	if name == "" {
 		return nil, ErrNameRequired
 	}
-	if description == "" {
-		return nil, ErrDescriptionRequired
+	if policy == "" {
+		return nil, ErrPolicyRequired
 	}
 	if type_name == "" {
 		return nil, ErrTypeRequired
 	}
-	if state == "" {
-		return nil, ErrStateRequired
+	if tableID == 0 {
+		return nil, ErrTableRequired
 	}
 	if projectID == 0 {
-		return nil, errors.New("Project is required")
+		return nil, ErrProjectRequired
 	}
 	return &Chain{
 		Name:        name,
-		Description: description,
 		Type:        type_name,
-		State:       state,
+		Priority:    priority,
+		Policy:       policy,
 		ProjectID:   projectID,
 		TableID:    tableID,
 	}, nil

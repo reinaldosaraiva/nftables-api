@@ -16,13 +16,11 @@ func NewChainDB(db *gorm.DB) *ChainDB {
 }
 
 func (cdb *ChainDB) Create(chain *entity.Chain) error {
-    // Inicia uma transação
     tx := cdb.DB.Begin()
     if tx.Error != nil {
         return tx.Error
     }
 
-    // Verifica se o Project existe
     if err := tx.First(&entity.Project{}, chain.ProjectID).Error; err != nil {
         tx.Rollback()
         if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -31,7 +29,6 @@ func (cdb *ChainDB) Create(chain *entity.Chain) error {
         return err
     }
 
-    // Verifica se a Table existe
     if err := tx.First(&entity.Table{}, chain.TableID).Error; err != nil {
         tx.Rollback()
         if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -40,13 +37,11 @@ func (cdb *ChainDB) Create(chain *entity.Chain) error {
         return err
     }
 
-    // Cria a Chain
     if err := tx.Create(chain).Error; err != nil {
         tx.Rollback()
         return err
     }
 
-    // Confirma a transação
     return tx.Commit().Error
 }
 func (cdb *ChainDB) FindByID(id uint64) (*entity.Chain, error) {

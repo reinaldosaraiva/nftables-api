@@ -235,6 +235,38 @@ paths:
       summary: Update a chain by ID
       tags:
       - Chains
+  /chains/filter:
+    get:
+      consumes:
+      - application/json
+      description: Get chains filtered by ID or name
+      parameters:
+      - description: Chain ID
+        in: query
+        name: id
+        type: integer
+      - description: Chain Name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CreateChainDTO'
+            type: array
+        "400":
+          description: Invalid parameter format
+        "404":
+          description: Chain not found
+      security:
+      - ApiKeyAuth: []
+      summary: Get chains with optional filters
+      tags:
+      - Chains
   /projects:
     get:
       consumes:
@@ -401,6 +433,38 @@ paths:
       summary: Update a project by ID
       tags:
       - Projects
+  /projects/filter:
+    get:
+      consumes:
+      - application/json
+      description: Get projects filtered by ID or name
+      parameters:
+      - description: Project ID
+        in: query
+        name: id
+        type: integer
+      - description: Project Name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CreateProjectDTO'
+            type: array
+        "400":
+          description: Invalid parameter format
+        "404":
+          description: Project not found
+      security:
+      - ApiKeyAuth: []
+      summary: Get projects with optional filters
+      tags:
+      - Projects
   /tables:
     get:
       consumes:
@@ -565,6 +629,38 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update a table by ID
+      tags:
+      - Tables
+  /tables/filter:
+    get:
+      consumes:
+      - application/json
+      description: Get tables filtered by ID or name
+      parameters:
+      - description: Table ID
+        in: query
+        name: id
+        type: integer
+      - description: Table Name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CreateTableDTO'
+            type: array
+        "400":
+          description: Invalid parameter format
+        "404":
+          description: Table not found
+      security:
+      - ApiKeyAuth: []
+      summary: Get tables with optional filters
       tags:
       - Tables
   /tenants:

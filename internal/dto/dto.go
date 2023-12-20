@@ -28,13 +28,14 @@ type CreateTableDTO struct {
     Name        string `json:"name"`
     Description string `json:"description"`
     Type        string `json:"type"`
-    State       string `json:"state"`
+    Priority    int    `json:"priority"`
+    Comment       string `json:"state"`
 }
 type CreateChainDTO struct {
     Name        string `json:"name"`
-    Description string `json:"description"`
     Type        string `json:"type"`
-    State       string `json:"state"`
+    Priority    int    `json:"priority"`
+    Policy       string `json:"policy"`
     ProjectID   uint64 `json:"project_id"`
 	TableID     uint64 `json:"table_id"`
 }
