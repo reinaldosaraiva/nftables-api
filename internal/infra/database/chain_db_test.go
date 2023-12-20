@@ -23,7 +23,7 @@ func setupDatabaseForChain(t *testing.T) *gorm.DB {
 
     project := &entity.Project{Name: "Project 1", TenantID: 1}
     db.Create(project)
-    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle",}
+    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", }
     db.Create(table)
 
     return db

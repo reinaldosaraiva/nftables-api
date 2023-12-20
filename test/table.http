@@ -15,10 +15,9 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-  "description": "input",
-  "name": "input",
-  "state": "active",
-  "type": "filter"
+  "name": "filter",
+  "description": "Filter table",
+  "type": "filter",
 }
 
 ###

@@ -1320,7 +1320,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Create user",
                 "parameters": [
@@ -1357,7 +1357,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Get a user by JWT user",
                 "parameters": [
@@ -1395,17 +1395,17 @@ const docTemplate = `{
         "dto.CreateChainDTO": {
             "type": "object",
             "properties": {
-                "description": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },
-                "project_id": {
+                "policy": {
+                    "type": "string"
+                },
+                "priority": {
                     "type": "integer"
                 },
-                "state": {
-                    "type": "string"
+                "project_id": {
+                    "type": "integer"
                 },
                 "table_id": {
                     "type": "integer"
@@ -1429,14 +1429,17 @@ const docTemplate = `{
         "dto.CreateTableDTO": {
             "type": "object",
             "properties": {
+                "comment": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "state": {
-                    "type": "string"
+                "priority": {
+                    "type": "integer"
                 },
                 "type": {
                     "type": "string"

@@ -2,14 +2,14 @@ basePath: /
 definitions:
   dto.CreateChainDTO:
     properties:
-      description:
-        type: string
       name:
         type: string
+      policy:
+        type: string
+      priority:
+        type: integer
       project_id:
         type: integer
-      state:
-        type: string
       table_id:
         type: integer
       type:
@@ -24,12 +24,14 @@ definitions:
     type: object
   dto.CreateTableDTO:
     properties:
+      comment:
+        type: string
       description:
         type: string
       name:
         type: string
-      state:
-        type: string
+      priority:
+        type: integer
       type:
         type: string
     type: object
@@ -911,7 +913,7 @@ paths:
             $ref: '#/definitions/handlers.Error'
       summary: Create user
       tags:
-      - users
+      - Users
   /users/generate_token:
     post:
       consumes:
@@ -939,7 +941,7 @@ paths:
             $ref: '#/definitions/handlers.Error'
       summary: Get a user by JWT user
       tags:
-      - users
+      - Users
 securityDefinitions:
   ApiKeyAuth:
     in: header

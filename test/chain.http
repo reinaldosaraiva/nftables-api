@@ -15,12 +15,12 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "New Chain",
-    "description": "This is a new chain",
-    "type": "Type of the chain",
-    "state": "State of the chain",
-    "project_id": 4,
-    "table_id": 1
+  "name": "INPUT",
+  "type": "filter",
+  "priority": 1 , 
+  "project_id": 1, 
+  "policy": 1,
+  "table_id": 1
 }
 
 ###

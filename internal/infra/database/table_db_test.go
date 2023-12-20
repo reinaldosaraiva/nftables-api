@@ -36,23 +36,22 @@ func TestCreateTable(t *testing.T) {
         name        string
         description string
         type_name   string
-        priority    int
-        comment     string
         err         error
+        
     }{
-        {"mangle", "Mangle table", "mangle", 100, "mangle", nil},
-        {"security", "Security table", "security", 150, "security", nil},
-        {"raw", "Raw table", "raw", 200, "raw", nil},
-        {"inet", "INET table (main filter)", "filter", 300, "filter", nil},
-		{"inet6", "INET6 table (main filter)", "filter", 300, "filter", nil},
-		{"arp", "ARP table (main filter)", "filter", 300, "filter", nil},
-		{"bridge", "Bridge table (main filter)", "filter", 300, "filter", nil},
-		{"ip", "IP table (main filter)", "filter", 300, "filter", nil},
-		{"netdev", "Netdev table (main filter)", "filter", 300, "filter", nil},
-		{"route", "Route table (main filter)", "filter", 300, "filter", nil},
-		{"fib", "FIB table (main filter)", "filter", 300, "filter", nil},
-		{"fip", "FIP table (main filter)", "filter", 300, "filter", nil},
-		{"inet", "INET table (main nat)", "nat", 300, "filter", nil},
+        {"mangle", "Mangle table", "mangle",  nil},
+        {"security", "Security table", "security",  nil},
+        {"raw", "Raw table", "raw",  nil},
+        {"inet", "INET table (main filter)", "filter",  nil},
+		{"inet6", "INET6 table (main filter)", "filter",  nil},
+		{"arp", "ARP table (main filter)", "filter",   nil},
+		{"bridge", "Bridge table (main filter)", "filter",   nil},
+		{"ip", "IP table (main filter)", "filter",  nil},
+		{"netdev", "Netdev table (main filter)", "filter",  nil},
+		{"route", "Route table (main filter)", "filter", nil},
+		{"fib", "FIB table (main filter)", "filter",  nil},
+		{"fip", "FIP table (main filter)", "filter",  nil},
+		{"inet", "INET table (main nat)", "nat", nil},
     }
 
     db := setupDatabaseForTable(t)
@@ -64,8 +63,7 @@ func TestCreateTable(t *testing.T) {
                 Name:        tt.name,
                 Description: tt.description,
                 Type:        tt.type_name,
-                Priority:    tt.priority,
-                Comment:     tt.comment,
+
             } 
 
             err := tableDB.Create(table)
@@ -96,7 +94,7 @@ func TestCreateTableWithChains(t *testing.T) {
     }
 
     table := &entity.Table{
-        Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle",
+        Name: "mangle", Description: "Mangle table",Type: "mangle",
         Chains: chains, 
     }
 
@@ -111,7 +109,7 @@ func TestFindTableByID(t *testing.T) {
     db := setupDatabaseForTable(t)
     tableDB := NewTableDB(db)
 
-    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle",}
+    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", }
     err := tableDB.Create(table)
     assert.NoError(t, err)
 
@@ -125,7 +123,7 @@ func TestUpdateTable(t *testing.T) {
     db := setupDatabaseForTable(t)
     tableDB := NewTableDB(db)
 
-    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle",}
+    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle",}
     err := tableDB.Create(table)
     assert.NoError(t, err)
 
@@ -142,7 +140,7 @@ func TestFindTableByName(t *testing.T) {
     db := setupDatabaseForTable(t)
     tableDB := NewTableDB(db)
 
-    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle", }
+    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", }
     err := tableDB.Create(table)
     assert.NoError(t, err)
 
@@ -156,7 +154,7 @@ func TestFindAllTables(t *testing.T) {
     tableDB := NewTableDB(db)
 
     for i := 0; i < 10; i++ {
-        table := &entity.Table{Name: fmt.Sprintf("Table %d", i), Type: "SomeType", Description: "Some table", Priority: 100, Comment:"Some table",}
+        table := &entity.Table{Name: fmt.Sprintf("Table %d", i), Type: "SomeType", Description: "Some table",}
         err := tableDB.Create(table)
         assert.NoError(t, err)
     }
@@ -170,7 +168,7 @@ func TestDeleteTable(t *testing.T) {
     db := setupDatabaseForTable(t)
     tableDB := NewTableDB(db)
 
-    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle", }
+    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle",  }
     err := tableDB.Create(table)
     assert.NoError(t, err)
 

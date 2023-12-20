@@ -81,7 +81,7 @@ func TestDeleteTenantCascade(t *testing.T) {
     err = projectDB.Create(project)
     assert.NoError(t, err)
 
-    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", Priority: 100, Comment:"mangle",}
+    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", }
     err = tableDB.Create(table) 
     assert.NoError(t, err)
 

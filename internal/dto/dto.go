@@ -28,8 +28,6 @@ type CreateTableDTO struct {
     Name        string `json:"name"`
     Description string `json:"description"`
     Type        string `json:"type"`
-    Priority    int    `json:"priority"`
-    Comment       string `json:"state"`
 }
 type CreateChainDTO struct {
     Name        string `json:"name"`

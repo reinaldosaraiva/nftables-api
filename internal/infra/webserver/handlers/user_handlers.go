@@ -28,7 +28,7 @@ func NewUserHandler(db database.UserInterface) *UserHandler {
 // Get a user by JWT godoc
 // @Summary Get a user by JWT user
 // @Description Get a user by JWT user
-// @Tags users
+// @Tags Users
 // @Accept json
 // @Produce json
 // @Param user body dto.LoginDTO true "user request"
@@ -71,7 +71,7 @@ func (h *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 // CreateUser godoc
 // @Summary Create user
 // @Description Create user
-// @Tags users
+// @Tags Users
 // @Accept json
 // @Produce json
 // @Param user body dto.CreateUserDTO true "user request"

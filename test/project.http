@@ -15,7 +15,7 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "project_1",
+    "name": "project_2",
     "tenant_id": 1 
 }
 

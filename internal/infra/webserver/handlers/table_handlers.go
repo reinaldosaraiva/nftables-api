@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -37,7 +38,8 @@ func (h *TableHandler) CreateTable(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusBadRequest)
         return
     }
-    table, err := entity.NewTable(tableDTO.Name, tableDTO.Description, tableDTO.Type, tableDTO.Priority, tableDTO.Comment)
+    table, err := entity.NewTable(tableDTO.Name, tableDTO.Description, tableDTO.Type)
+    fmt.Println(table)
     if err != nil {
         w.WriteHeader(http.StatusBadRequest)
         return
