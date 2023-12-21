@@ -30,18 +30,13 @@ type CreateTableDTO struct {
     Type        string `json:"type"`
 }
 type CreateChainDTO struct {
+    ID         uint64 `json:"id"`
     Name        string `json:"name"`
     Type        string `json:"type"`
     Priority    int    `json:"priority"`
     Policy       string `json:"policy"`
     ProjectID   uint64 `json:"project_id"`
 	TableID     uint64 `json:"table_id"`
-}
-type CreateRuleDTO struct {
-    ChainID    uint64 `json:"chain_id"`
-    Protocol   string `json:"protocol"`
-    Port       int    `json:"port"`
-    Action     string `json:"action"`
 }
 
 type CreateServiceDTO struct {
@@ -52,4 +47,13 @@ type CreateServiceDTO struct {
 type CreateNetworkObjectDTO struct {
     Name    string `json:"name"`
     Address string `json:"address"`
+}
+
+type CreateRuleDTO struct {
+    Chain               CreateChainDTO   `json:"chain"`
+    Protocol            string   `json:"protocol"`
+    Port                int      `json:"port"`
+    Action              string   `json:"action"`
+    ServiceRules        []CreateServiceDTO `json:"service_rules"` 
+    NetworkObjectRules  []CreateNetworkObjectDTO  `json:"network_object_rules"` 
 }

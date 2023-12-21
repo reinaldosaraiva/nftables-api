@@ -46,7 +46,7 @@ func (cdb *ChainDB) Create(chain *entity.Chain) error {
 }
 func (cdb *ChainDB) FindByID(id uint64) (*entity.Chain, error) {
     var chain entity.Chain
-    err := cdb.DB.Where("id = ?", id).First(&chain).Error
+    err := cdb.DB.Preload("Project").Preload("Table").Where("id = ?", id).First(&chain).Error
     if err != nil {
         return nil, err
     }
@@ -55,7 +55,7 @@ func (cdb *ChainDB) FindByID(id uint64) (*entity.Chain, error) {
 
 func (cdb *ChainDB) FindByName(name string) (*entity.Chain, error) {
     var chain entity.Chain
-    err := cdb.DB.Where("name = ?", name).First(&chain).Error
+    err := cdb.DB.Preload("Project").Preload("Table").Where("name = ?", name).First(&chain).Error
     if err != nil {
         return nil, err
     }
@@ -77,9 +77,9 @@ func (cdb *ChainDB) FindAll(page int, limit int, sort string) ([]entity.Chain, e
         sort = "asc"
     }
     if page != 0 && limit != 0 {
-        err = cdb.DB.Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&chains).Error
+        err = cdb.DB.Preload("Project").Preload("Table").Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&chains).Error
     } else {
-        err = cdb.DB.Order("CreatedAt " + sort).Find(&chains).Error
+        err = cdb.DB.Preload("Project").Preload("Table").Order("CreatedAt " + sort).Find(&chains).Error
     }
     return chains, err
 }

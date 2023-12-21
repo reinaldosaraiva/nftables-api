@@ -17,7 +17,7 @@ func TestNewNetworkObject(t *testing.T) {
         {"Main Server", "10.0.0.1", nil},
         {"", "192.168.1.0/24", entity.ErrNameRequired},
         {"Local Network", "", entity.ErrAddressRequired},
-        // Mais casos de teste podem ser adicionados aqui
+        
     }
 
     for _, tt := range tests {

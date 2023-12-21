@@ -72,6 +72,34 @@ type ProjectInterface interface {
     Delete(id uint64) error
 }
 
+type ServiceInterface interface {
+    Create(service *entity.Service) error
+
+    FindByID(id uint64) (*entity.Service, error)
+
+    FindByName(name string) (*entity.Service, error)
+
+    FindAll(page, limit int, sort string) ([]entity.Service, error)
+
+    Update(service *entity.Service) error
+
+    Delete(id uint64) error
+}
+
+type NetworkObjectInterface interface {
+    Create(network_object *entity.NetworkObject) error
+
+    FindByID(id uint64) (*entity.NetworkObject, error)
+
+    FindByName(name string) (*entity.NetworkObject, error)
+
+    FindAll(page, limit int, sort string) ([]entity.NetworkObject, error)
+
+    Update(network_object *entity.NetworkObject) error
+
+    Delete(id uint64) error
+}
+
 type UserInterface interface {
 	Create(user *entity.User) error
 	FindByEmail(email string) (*entity.User, error)

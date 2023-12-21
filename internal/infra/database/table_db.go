@@ -20,7 +20,7 @@ func (tdb *TableDB) Create(table *entity.Table) error {
 
 func (tdb *TableDB) FindByID(id uint64) (*entity.Table, error) {
     var table entity.Table
-    err := tdb.DB.Where("id = ?", id).First(&table).Error
+    err := tdb.DB.Preload("Chains").Where("id = ?", id).First(&table).Error
     if err != nil {
         return nil, err
     }
@@ -29,7 +29,7 @@ func (tdb *TableDB) FindByID(id uint64) (*entity.Table, error) {
 
 func (tdb *TableDB) FindByName(name string) (*entity.Table, error) {
     var table entity.Table
-    err := tdb.DB.Where("name = ?", name).First(&table).Error
+    err := tdb.DB.Preload("Chains").Where("name = ?", name).First(&table).Error
     if err != nil {
         return nil, err
     }
@@ -52,9 +52,9 @@ func (tdb *TableDB) FindAll(page int, limit int, sort string) ([]entity.Table, e
         sort = "asc"
     }
     if page != 0 && limit != 0 {
-        err = tdb.DB.Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&tables).Error
+        err = tdb.DB.Preload("Chains").Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&tables).Error
     } else {
-        err = tdb.DB.Order("CreatedAt " + sort).Find(&tables).Error
+        err = tdb.DB.Preload("Chains").Order("CreatedAt " + sort).Find(&tables).Error
     }
     return tables, err
 }

@@ -2,6 +2,8 @@ basePath: /
 definitions:
   dto.CreateChainDTO:
     properties:
+      id:
+        type: integer
       name:
         type: string
       policy:
@@ -15,6 +17,13 @@ definitions:
       type:
         type: string
     type: object
+  dto.CreateNetworkObjectDTO:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+    type: object
   dto.CreateProjectDTO:
     properties:
       name:
@@ -22,16 +31,38 @@ definitions:
       tenant_id:
         type: integer
     type: object
+  dto.CreateRuleDTO:
+    properties:
+      action:
+        type: string
+      chain:
+        $ref: '#/definitions/dto.CreateChainDTO'
+      network_object_rules:
+        items:
+          $ref: '#/definitions/dto.CreateNetworkObjectDTO'
+        type: array
+      port:
+        type: integer
+      protocol:
+        type: string
+      service_rules:
+        items:
+          $ref: '#/definitions/dto.CreateServiceDTO'
+        type: array
+    type: object
+  dto.CreateServiceDTO:
+    properties:
+      name:
+        type: string
+      port:
+        type: integer
+    type: object
   dto.CreateTableDTO:
     properties:
-      comment:
-        type: string
       description:
         type: string
       name:
         type: string
-      priority:
-        type: integer
       type:
         type: string
     type: object
@@ -467,6 +498,214 @@ paths:
       summary: Get projects with optional filters
       tags:
       - Projects
+  /rules:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all rules
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Sort order
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/dto.CreateRuleDTO'
+              type: array
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all rules
+      tags:
+      - Rules
+    post:
+      consumes:
+      - application/json
+      description: Create Rule with Chain, Service, and Network Object relations
+      parameters:
+      - description: Rule request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRuleDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new Rule
+      tags:
+      - Rules
+  /rules/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a rule by its ID
+      parameters:
+      - description: Rule ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a rule
+      tags:
+      - Rules
+    get:
+      consumes:
+      - application/json
+      description: Get a single rule by its ID
+      parameters:
+      - description: Rule ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CreateRuleDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a rule by ID
+      tags:
+      - Rules
+    put:
+      consumes:
+      - application/json
+      description: Update an existing rule
+      parameters:
+      - description: Rule ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Rule
+        in: body
+        name: rule
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRuleDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a rule
+      tags:
+      - Rules
+  /rules/filter:
+    get:
+      consumes:
+      - application/json
+      description: Get rules filtered by ID or name
+      parameters:
+      - description: Rule ID
+        in: query
+        name: id
+        type: integer
+      - description: Rule Name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/dto.CreateRuleDTO'
+              type: array
+            type: array
+        "400":
+          description: Invalid parameter format
+        "404":
+          description: Rule not found
+      security:
+      - ApiKeyAuth: []
+      summary: Get rules with optional filters
+      tags:
+      - Rules
   /tables:
     get:
       consumes:

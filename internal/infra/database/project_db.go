@@ -19,7 +19,7 @@ func (pdb *ProjectDB) Create(project *entity.Project) error {
 
 func (pdb *ProjectDB) FindByID(id uint64) (*entity.Project, error) {
     var project entity.Project
-    err := pdb.DB.Where("id = ?", id).First(&project).Error
+    err := pdb.DB.Preload("Tenant").Preload("Chains").Where("id = ?", id).First(&project).Error
     if err != nil {
         return nil, err
     }
@@ -28,7 +28,7 @@ func (pdb *ProjectDB) FindByID(id uint64) (*entity.Project, error) {
 
 func (pdb *ProjectDB) FindByName(name string) (*entity.Project, error) {
     var project entity.Project
-    err := pdb.DB.Where("name = ?", name).First(&project).Error
+    err := pdb.DB.Preload("Tenant").Preload("Chains").Where("name = ?", name).First(&project).Error
     if err != nil {
         return nil, err
     }
@@ -50,9 +50,9 @@ func (pdb *ProjectDB) FindAll(page int, limit int, sort string) ([]entity.Projec
         sort = "asc"
     }
     if page != 0 && limit != 0 {
-        err = pdb.DB.Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&projects).Error
+        err = pdb.DB.Preload("Tenant").Preload("Chains").Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&projects).Error
     } else {
-        err = pdb.DB.Order("CreatedAt " + sort).Find(&projects).Error
+        err = pdb.DB.Preload("Tenant").Preload("Chains").Order("CreatedAt " + sort).Find(&projects).Error
     }
     return projects, err
 }

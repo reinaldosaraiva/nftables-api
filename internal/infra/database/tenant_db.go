@@ -55,7 +55,7 @@ func (tdb *TenantDB) FindAll(page int, limit int, sort string) ([]entity.Tenant,
 	if page != 0 && limit != 0 {
 		err = tdb.DB.Preload("Projects").Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&tenants).Error
 	} else {
-		err = tdb.DB.Order("CreatedAt " + sort).Find(&tenants).Error
+		err = tdb.DB.Preload("Projects").Order("CreatedAt " + sort).Find(&tenants).Error
 	}
 	return tenants, err
 }
