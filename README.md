@@ -8,6 +8,7 @@ This is a Go API that provides a RESTful interface for managing nftables, a powe
 ### Example .env
 It is necessary to create a .env file in the root directory of the project.
 ```
+# PostgreSQL
 DB_DRIVER=postgres
 DB_HOST=localhost
 DB_PORT=5432
@@ -17,4 +18,18 @@ DB_NAME=nftablesdb
 WEB_SERVER_PORT=8000
 JWT_SECRET=secret
 JWT_EXPIRE_IN=30000
+
+#SQLite
+DB_DRIVER=sqlite3
+DB_PATH=./nftables.db 
+WEB_SERVER_PORT=8000
+JWT_SECRET=secret
+JWT_EXPIRE_IN=30000
+
+```
+
+## Development 
+```
+go install github.com/cosmtrek/air@latest 
+air -d
 ```

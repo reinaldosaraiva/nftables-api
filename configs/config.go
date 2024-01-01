@@ -12,6 +12,7 @@ import (
 type conf struct {
 	DBDriver string `mapstructure:"DB_DRIVER"`
 	DBHost string `mapstructure:"DB_HOST"`
+    DBPath string `mapstructure:"DB_PATH"`
 	DBPort string `mapstructure:"DB_PORT"`
 	DBUser string `mapstructure:"DB_USER"`
 	DBName string `mapstructure:"DB_NAME"`

@@ -14,7 +14,7 @@ import (
 	"github.com/reinaldosaraiva/nftables-api/internal/infra/database"
 	"github.com/reinaldosaraiva/nftables-api/internal/infra/webserver/handlers"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -35,8 +35,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
-	db, err := gorm.Open(postgres.Open(config.GetDBDSN()), &gorm.Config{})
+	//SQLite
+	db, err := gorm.Open(sqlite.Open(config.DBPath), &gorm.Config{})
+//	PostgreSQL
+// 	db, err := gorm.Open(postgres.Open(config.GetDBDSN()), &gorm.Config{})
 	
 	if err != nil {
 		panic(err)
