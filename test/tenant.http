@@ -15,7 +15,7 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 ###
-GET {{baseUrl}}/tenants/1 HTTP/1.1
+GET {{baseUrl}}/tenants/2 HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
@@ -26,7 +26,7 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 ###
-GET {{baseUrl}}/tenants/filter?name=tenant_4 HTTP/1.1
+GET {{baseUrl}}/tenants/filter?name=tenant_3 HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
@@ -42,16 +42,16 @@ Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "tenant_4"
+    "name": "tenant_5"
 }
 
 ###
-PUT {{baseUrl}}/tenants/5 HTTP/1.1
+PUT {{baseUrl}}/tenants/1 HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}
 Content-Type: application/json
 
 {
-    "name": "Tenant Updated"
+    "name": "Tenant Updated 2"
 }
 
 ###
@@ -62,5 +62,5 @@ Content-Type: application/json
 @baseUrl = http://localhost:8000
 
 ###
-DELETE {{baseUrl}}/tenants/3 HTTP/1.1
+DELETE {{baseUrl}}/tenants/1 HTTP/1.1
 Authorization: Bearer {{generateToken.response.body.access_token}}

@@ -47,7 +47,7 @@ func main() {
 	log.Println("Config JWTExpireIN: " + strconv.FormatUint(uint64(config.JWTExpireIn), 10))
 	userHandler := handlers.NewUserHandler(database.NewUser(db))
 	tenantHandler := handlers.NewTenantHandler(database.NewTenantDB(db))
-	projectHandler := handlers.NewProjectHandler(database.NewProjectDB(db))
+	projectHandler := handlers.NewProjectHandler(database.NewProjectDB(db), database.NewTenantDB(db))
 	tableHandler := handlers.NewTableHandler(database.NewTableDB(db))
 	chainHandler := handlers.NewChainHandler(database.NewChainDB(db))
 	r := chi.NewRouter()

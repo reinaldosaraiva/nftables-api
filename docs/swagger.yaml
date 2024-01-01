@@ -28,8 +28,8 @@ definitions:
     properties:
       name:
         type: string
-      tenant_id:
-        type: integer
+      tenant_name:
+        type: string
     type: object
   dto.CreateRuleDTO:
     properties:
@@ -68,6 +68,8 @@ definitions:
     type: object
   dto.CreateTenantDTO:
     properties:
+      id:
+        type: integer
       name:
         type: string
     type: object

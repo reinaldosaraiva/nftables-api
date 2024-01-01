@@ -1,6 +1,9 @@
 package database
 
-import "github.com/reinaldosaraiva/nftables-api/internal/entity"
+import (
+	"github.com/reinaldosaraiva/nftables-api/internal/dto"
+	"github.com/reinaldosaraiva/nftables-api/internal/entity"
+)
 
 type TableInterface interface {
     Create(table *entity.Table) error
@@ -47,11 +50,11 @@ type RuleInterface interface {
 type TenantInterface interface {
     Create(tenant *entity.Tenant) error
 
-    FindByID(id uint64) (*entity.Tenant, error)
+    FindByID(id uint64) (*dto.CreateTenantDTO, error)
 
-    FindByName(name string) (*entity.Tenant, error)
+    FindByName(name string) (*dto.CreateTenantDTO, error)
 
-    FindAll(page, limit int, sort string) ([]entity.Tenant, error)
+    FindAll(page, limit int, sort string) ([]dto.CreateTenantDTO, error)
 
     Update(tenant *entity.Tenant) error
 
@@ -61,11 +64,11 @@ type TenantInterface interface {
 type ProjectInterface interface {
     Create(project *entity.Project) error
 
-    FindByID(id uint64) (*entity.Project, error)
+    FindByID(id uint64) (*dto.DetailsProjectDTO, error)
 
-    FindByName(name string) (*entity.Project, error)
+    FindByName(name string) (*dto.DetailsProjectDTO, error)
 
-    FindAll(page, limit int, sort string) ([]entity.Project, error)
+    FindAll(page, limit int, sort string) ([]dto.DetailsProjectDTO, error)
 
     Update(project *entity.Project) error
 

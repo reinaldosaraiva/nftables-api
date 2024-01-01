@@ -3,6 +3,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -10,14 +12,18 @@ import (
 	"github.com/reinaldosaraiva/nftables-api/internal/dto"
 	"github.com/reinaldosaraiva/nftables-api/internal/entity"
 	"github.com/reinaldosaraiva/nftables-api/internal/infra/database"
+	"gorm.io/gorm"
 )
-
 type ProjectHandler struct {
 	ProjectDB database.ProjectInterface
+	TenantDB  database.TenantInterface
 }
 
-func NewProjectHandler(db database.ProjectInterface) *ProjectHandler {
-	return &ProjectHandler{ProjectDB: db}
+func NewProjectHandler(projectDB database.ProjectInterface, tenantDB database.TenantInterface) *ProjectHandler {
+	return &ProjectHandler{
+		ProjectDB: projectDB,
+		TenantDB:  tenantDB,
+	}
 }
 
 // Create Project godoc
@@ -32,24 +38,38 @@ func NewProjectHandler(db database.ProjectInterface) *ProjectHandler {
 // @Router /projects [post]
 // @Security ApiKeyAuth
 func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
-	var projectDTO dto.CreateProjectDTO
-	err := json.NewDecoder(r.Body).Decode(&projectDTO)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	p := &entity.Project{
-		Name:     projectDTO.Name,
-		TenantID: projectDTO.TenantID,
-	}
-	err = h.ProjectDB.Create(p)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusCreated)
-}
+    var projectDTO dto.CreateProjectDTO
+    err := json.NewDecoder(r.Body).Decode(&projectDTO)
+    if err != nil {
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
 
+    tenant, err := h.TenantDB.FindByName(projectDTO.TenantName)
+    if err != nil {
+        // Se o Tenant não for encontrado, retorna 404
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        // Outros erros do banco de dados
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    project := &entity.Project{
+        Name:     projectDTO.Name,
+        TenantID: tenant.ID,
+    }
+
+    err = h.ProjectDB.Create(project)
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusCreated)
+}
 // Get a project by ID godoc
 // @Summary Get a project by ID
 // @Description Get a project by ID
@@ -97,7 +117,7 @@ func (h *ProjectHandler) GetProjectsWithFilters(w http.ResponseWriter, r *http.R
     name := queryValues.Get("name")
     idStr := queryValues.Get("id")
 
-    var project *entity.Project
+    var project *dto.DetailsProjectDTO
     var err error
 
     if idStr != "" {
@@ -179,15 +199,17 @@ func (h *ProjectHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 func (h *ProjectHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
 	err = h.ProjectDB.Delete(id)
+	fmt.Println(err)
 	if err != nil {
+			
+		if err == gorm.ErrRecordNotFound {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
 		w.WriteHeader(http.StatusInternalServerError)
-		return
+		}
+        return
 	}
 
 	w.WriteHeader(http.StatusOK)

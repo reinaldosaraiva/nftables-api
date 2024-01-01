@@ -1762,8 +1762,8 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "tenant_id": {
-                    "type": "integer"
+                "tenant_name": {
+                    "type": "string"
                 }
             }
         },
@@ -1824,6 +1824,9 @@ const docTemplate = `{
         "dto.CreateTenantDTO": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 }

@@ -120,7 +120,7 @@ func (h *TenantHandler) GetTenantsWithFilters(w http.ResponseWriter, r *http.Req
     name := queryValues.Get("name")
     idStr := queryValues.Get("id")
 
-	var tenant *entity.Tenant
+	var tenant *dto.CreateTenantDTO
     var err error
 
     if idStr != "" {

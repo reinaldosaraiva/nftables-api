@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 
+	"github.com/reinaldosaraiva/nftables-api/internal/dto"
 	"github.com/reinaldosaraiva/nftables-api/internal/entity"
 	"gorm.io/gorm"
 )
@@ -19,46 +20,69 @@ func (tdb *TenantDB) Create(tenant *entity.Tenant) error {
 	return tdb.DB.Create(tenant).Error
 }
 
-func (tdb *TenantDB) FindByID(id uint64) (*entity.Tenant, error) {
-	var tenant entity.Tenant
-	err := tdb.DB.Preload("Projects").Where("id = ?", id).First(&tenant).Error
+func (tdb *TenantDB) FindByID(id uint64) (*dto.CreateTenantDTO, error) {
+	var tenantDTO dto.CreateTenantDTO
+	err := tdb.DB.Model(&entity.Tenant{}).
+		Where("tenants.id = ?", id).Where("tenants.deleted_at is null").
+		First(&tenantDTO).
+		Error
+	
+	if tenantDTO.ID == 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
 	if err != nil {
 		return nil, err
 	}
-	return &tenant, nil
+	return &tenantDTO, nil
 }
 
-func (tdb *TenantDB) FindByName(name string) (*entity.Tenant, error) {
-	var tenant entity.Tenant
-	err := tdb.DB.Preload("Projects").Where("name = ?", name).First(&tenant).Error
-	fmt.Println(name)
+func (tdb *TenantDB) FindByName(name string) (*dto.CreateTenantDTO, error) {
+	var tenantDTO dto.CreateTenantDTO
+	err := tdb.DB.Model(&entity.Tenant{}).
+		Where("tenants.name = ?", name).
+		First(&tenantDTO).Where("tenants.deleted_at is null").
+		Error
 	if err != nil {
 		return nil, err
 	}
-	return &tenant, nil
+	return &tenantDTO, nil
 }
 
 func (tdb *TenantDB) Update(tenant *entity.Tenant) error {
-	_, err := tdb.FindByID(uint64(tenant.ID))
+	result, err := tdb.FindByID(uint64(tenant.ID))
 	if err != nil {
 		return err
+	}
+	fmt.Println(result)
+	if result == nil {
+		return gorm.ErrRecordNotFound
 	}
 	return tdb.DB.Save(tenant).Error
 }
 
-func (tdb *TenantDB) FindAll(page int, limit int, sort string) ([]entity.Tenant, error) {
-	var tenants []entity.Tenant
-	var err error
-	if sort == "" || sort == "asc" || sort != "desc" {
-		sort = "asc"
+func (tdb *TenantDB) FindAll(page int, limit int, sort string) ([]dto.CreateTenantDTO, error) {
+    var tenantsDTO []dto.CreateTenantDTO
+    var err error
+
+    if sort == "" || sort == "asc" || sort != "desc" {
+        sort = "asc"
+    }
+
+    query := tdb.DB.Model(&entity.Tenant{})
+    if page != 0 && limit != 0 {
+        query = query.Limit(limit).Offset((page - 1) * limit)
+    }
+    if sort != "" {
+        query = query.Order("id " + sort)
+    }
+    
+    err = query.Find(&tenantsDTO).Error
+	if len(tenantsDTO) == 0 {
+		return []dto.CreateTenantDTO{}, err
 	}
-	if page != 0 && limit != 0 {
-		err = tdb.DB.Preload("Projects").Limit(limit).Offset((page - 1) * limit).Order("id " + sort).Find(&tenants).Error
-	} else {
-		err = tdb.DB.Preload("Projects").Order("CreatedAt " + sort).Find(&tenants).Error
-	}
-	return tenants, err
+    return tenantsDTO, err
 }
+
 
 func (tdb *TenantDB) Delete(id uint64) error {
     tx := tdb.DB.Begin()

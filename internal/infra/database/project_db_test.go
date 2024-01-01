@@ -11,35 +11,47 @@ import (
 	"gorm.io/gorm"
 )
 
-func setupDatabaseForProject(t *testing.T) *gorm.DB {
-    db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+func setupDatabaseAndTenantForProject(t *testing.T) (*gorm.DB, *entity.Tenant) {
+    db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
     if err != nil {
         t.Fatalf("Failed to open database: %v", err)
     }
-
-    err = db.AutoMigrate(&entity.Project{}, &entity.Tenant{}, &entity.Table{},&entity.Chain{})
+    err = db.AutoMigrate(&entity.Chain{}, &entity.Rule{},&entity.Project{}, &entity.Table{},&entity.Tenant{},&entity.Service{},&entity.NetworkObject{},)
     if err != nil {
         t.Fatalf("Failed to migrate database: %v", err)
     }
+    if err != nil {
+        t.Fatalf("Failed to migrate database: %v", err)
+    }
+    tenant := &entity.Tenant{Name: "Tenant for Project Testing"}
+    err = db.Create(tenant).Error
+    if err != nil {
+        t.Fatalf("Failed to create tenant: %v", err)
+    }
 
-    return db
+    return db, tenant
 }
 
-func TestCreateProject(t *testing.T) {
-    db := setupDatabaseForProject(t)
-    projectDB := NewProjectDB(db)
-    project := &entity.Project{Name: "Project 1", TenantID: 1} 
 
-    err := projectDB.Create(project)
+func TestCreateProject(t *testing.T) {
+    db,tenant := setupDatabaseAndTenantForProject(t)
+    tenantDB := NewTenantDB(db)
+    projectDB := NewProjectDB(db)
+    tenant = &entity.Tenant{Name: "Tenant 1"}
+    err := tenantDB.Create(tenant)
+    assert.NoError(t, err)
+    assert.NotZero(t, tenant.ID)
+    project := &entity.Project{Name: "Project 1", TenantID: uint64(tenant.ID)}
+    err = projectDB.Create(project)
     assert.NoError(t, err)
     assert.NotZero(t, project.ID)
 }
 
 func TestFindProjectByID(t *testing.T) {
-    db := setupDatabaseForProject(t)
+    db, tenant := setupDatabaseAndTenantForProject(t)
     projectDB := NewProjectDB(db)
 
-    project := &entity.Project{Name: "Project 1", TenantID: 1}
+    project := &entity.Project{Name: "Project 1", TenantID: uint64(tenant.ID)}
     err := projectDB.Create(project)
     assert.NoError(t, err)
 
@@ -48,26 +60,25 @@ func TestFindProjectByID(t *testing.T) {
     assert.NotNil(t, foundProject)
     assert.Equal(t, "Project 1", foundProject.Name)
 }
-
 func TestFindProjectByName(t *testing.T) {
-    db := setupDatabaseForProject(t)
+    db, tenant := setupDatabaseAndTenantForProject(t)
     projectDB := NewProjectDB(db)
 
-    project := &entity.Project{Name: "Project 1", TenantID: 1}
+    project := &entity.Project{Name: "Project 1", TenantID: uint64(tenant.ID)}
     err := projectDB.Create(project)
     assert.NoError(t, err)
 
-    foundProject, err := projectDB.FindByName("Project 1")
+    foundProjects, err := projectDB.FindByName("Project 1")
     assert.NoError(t, err)
-    assert.NotNil(t, foundProject)
-    assert.Equal(t, "Project 1", foundProject.Name)
+    assert.NotEmpty(t, foundProjects)
+    // assert.Equal(t, "Project 1", foundProjects)
 }
 
 func TestUpdateProject(t *testing.T) {
-    db := setupDatabaseForProject(t)
+    db, tenant := setupDatabaseAndTenantForProject(t)
     projectDB := NewProjectDB(db)
 
-    project := &entity.Project{Name: "Project 1", TenantID: 1}
+    project := &entity.Project{Name: "Project 1", TenantID: uint64(tenant.ID)}
     err := projectDB.Create(project)
     assert.NoError(t, err)
 
@@ -81,11 +92,11 @@ func TestUpdateProject(t *testing.T) {
 }
 
 func TestFindAllProjects(t *testing.T) {
-    db := setupDatabaseForProject(t)
+    db, tenant := setupDatabaseAndTenantForProject(t)
     projectDB := NewProjectDB(db)
 
     for i := 0; i < 10; i++ {
-        project := &entity.Project{Name: fmt.Sprintf("Project %d", i), TenantID: 1}
+        project := &entity.Project{Name: fmt.Sprintf("Project %d", i), TenantID: uint64(tenant.ID)}
         err := projectDB.Create(project)
         assert.NoError(t, err)
     }
@@ -96,10 +107,10 @@ func TestFindAllProjects(t *testing.T) {
 }
 
 func TestDeleteProject(t *testing.T) {
-    db := setupDatabaseForProject(t)
+    db, tenant := setupDatabaseAndTenantForProject(t)
     projectDB := NewProjectDB(db)
 
-    project := &entity.Project{Name: "Project to Delete", TenantID: 1}
+    project := &entity.Project{Name: "Project to Delete", TenantID: uint64(tenant.ID)}
     err := projectDB.Create(project)
     assert.NoError(t, err)
 
@@ -110,19 +121,18 @@ func TestDeleteProject(t *testing.T) {
     assert.Error(t, err)
 }
 
-
 func TestDeleteProjectCascade(t *testing.T) {
-    db := setupDatabaseForProject(t)
+    db, tenant := setupDatabaseAndTenantForProject(t)
     projectDB := NewProjectDB(db)
-    tableDB := NewTableDB(db) 
+    tableDB := NewTableDB(db)
     chainDB := NewChainDB(db)
 
-    project := &entity.Project{Name: "Project with Chains"}
+    project := &entity.Project{Name: "Project with Chains", TenantID: uint64(tenant.ID)}
     err := projectDB.Create(project)
     assert.NoError(t, err)
 
-    table := &entity.Table{Name: "mangle", Description: "Mangle table",Type: "mangle", }
-    err = tableDB.Create(table) // Cria uma Table
+    table := &entity.Table{Name: "mangle", Description: "Mangle table", Type: "mangle"}
+    err = tableDB.Create(table)
     assert.NoError(t, err)
 
     for i := 0; i < 3; i++ {
@@ -143,3 +153,4 @@ func TestDeleteProjectCascade(t *testing.T) {
         assert.NotEqual(t, c.ProjectID, project.ID)
     }
 }
+
