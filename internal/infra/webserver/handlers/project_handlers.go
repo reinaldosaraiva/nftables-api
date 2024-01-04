@@ -40,6 +40,7 @@ func NewProjectHandler(projectDB database.ProjectInterface, tenantDB database.Te
 func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
     var projectDTO dto.CreateProjectDTO
     err := json.NewDecoder(r.Body).Decode(&projectDTO)
+	fmt.Println(projectDTO)
     if err != nil {
         w.WriteHeader(http.StatusBadRequest)
         return

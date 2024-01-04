@@ -34,6 +34,7 @@ func NewTableHandler(db database.TableInterface) *TableHandler {
 func (h *TableHandler) CreateTable(w http.ResponseWriter, r *http.Request) {
     var tableDTO dto.CreateTableDTO
     err := json.NewDecoder(r.Body).Decode(&tableDTO)
+    fmt.Println(err)
     if err != nil {
         w.WriteHeader(http.StatusBadRequest)
         return
@@ -100,7 +101,7 @@ func (h *TableHandler) GetTablesWithFilters(w http.ResponseWriter, r *http.Reque
     name := queryValues.Get("name")
     idStr := queryValues.Get("id")
 
-    var table *entity.Table
+    var table *dto.DetailsTableDTO
     var err error
 
     if idStr != "" {
@@ -225,6 +226,8 @@ func (h *TableHandler) GetTables(w http.ResponseWriter, r *http.Request) {
     }
 
     tables, err := h.TableDB.FindAll(page, limit, sort)
+    fmt.Println(tables)
+    fmt.Println(err)
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
         return

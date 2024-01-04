@@ -8,11 +8,11 @@ import (
 type TableInterface interface {
     Create(table *entity.Table) error
 
-    FindByID(id uint64) (*entity.Table, error)
+    FindByID(id uint64) (*dto.DetailsTableDTO, error)
 
-    FindByName(name string) (*entity.Table, error)
+    FindByName(name string) (*dto.DetailsTableDTO, error)
 
-    FindAll(page, limit int, sort string) ([]entity.Table, error)
+    FindAll(page, limit int, sort string) ([]dto.DetailsTableDTO, error)
 
     Update(table *entity.Table) error
 
@@ -22,11 +22,11 @@ type TableInterface interface {
 type ChainInterface interface {
     Create(chain *entity.Chain) error
 
-    FindByID(id uint64) (*entity.Chain, error)
+    FindByID(id uint64) (*dto.DetailsChainDTO, error)
 
-    FindByName(name string) (*entity.Chain, error)
+    FindByName(name string) (*dto.DetailsChainDTO, error)
 
-    FindAll(page, limit int, sort string) ([]entity.Chain, error)
+    FindAll(page, limit int, sort string) ([]dto.DetailsChainDTO, error)
 
     Update(chain *entity.Chain) error
 

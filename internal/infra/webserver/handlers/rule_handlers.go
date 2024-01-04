@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -29,28 +30,15 @@ func NewRuleHandler(ruleDB database.RuleInterface, chainDB database.ChainInterfa
     }
 }
 
-func (h *RuleHandler) createOrFindChain(dto dto.CreateChainDTO) (*dto.CreateChainDTO, error) {
+func (h *RuleHandler) createOrFindChain(ChainName string) (*dto.DetailsChainDTO, error) {
 
-    _,err := h.ChainDB.FindByName(dto.Name)
+    chain,err := h.ChainDB.FindByName(ChainName)
     if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
         return nil, err
     }
 
 
-    if errors.Is(err, gorm.ErrRecordNotFound) {
-        newChain, err := entity.NewChain(dto.Name, dto.Type, dto.Policy, dto.Priority, dto.ProjectID, dto.TableID)
-        if err != nil {
-            return nil, err
-        }
-        err = h.ChainDB.Create(newChain)
-        if err != nil {
-            return nil, err
-        }
-
-        return &dto, nil
-    }
-
-    return &dto, nil
+    return chain, nil
 }
 
 func (h *RuleHandler) createOrFindService(dto dto.CreateServiceDTO) (*entity.Service, error) {
@@ -112,12 +100,14 @@ func (h *RuleHandler) createOrFindNetworkObject(dto dto.CreateNetworkObjectDTO) 
 // @Security ApiKeyAuth
 func (h *RuleHandler) CreateRule(w http.ResponseWriter, r *http.Request) {
     var ruleDTO dto.CreateRuleDTO
+    fmt.Println(ruleDTO)
     if err := json.NewDecoder(r.Body).Decode(&ruleDTO); err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
 
     rule, err := h.buildRuleFromDTO(ruleDTO)
+    fmt.Println(rule)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -132,9 +122,13 @@ func (h *RuleHandler) CreateRule(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *RuleHandler) buildRuleFromDTO(dto dto.CreateRuleDTO) (*entity.Rule, error) {
-    chain, err := h.createOrFindChain(dto.Chain)
+    fmt.Println("CHAIN NAME: "+dto.ChainName)
+    chain, err := h.createOrFindChain(dto.ChainName)
     if err != nil {
         return nil, err
+    }
+    if chain == nil {
+        return nil, errors.New("chain not found") 
     }
 
     rule := &entity.Rule{
@@ -162,6 +156,7 @@ func (h *RuleHandler) buildRuleFromDTO(dto dto.CreateRuleDTO) (*entity.Rule, err
 
     return rule, nil
 }
+
 // GetRule godoc
 // @Summary Get a rule by ID
 // @Description Get a single rule by its ID

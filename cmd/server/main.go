@@ -51,7 +51,8 @@ func main() {
 	tenantHandler := handlers.NewTenantHandler(database.NewTenantDB(db))
 	projectHandler := handlers.NewProjectHandler(database.NewProjectDB(db), database.NewTenantDB(db))
 	tableHandler := handlers.NewTableHandler(database.NewTableDB(db))
-	chainHandler := handlers.NewChainHandler(database.NewChainDB(db))
+	chainHandler := handlers.NewChainHandler(database.NewChainDB(db), database.NewProjectDB(db), database.NewTableDB(db))
+	ruleHandler := handlers.NewRuleHandler(database.NewRuleDB(db), database.NewChainDB(db), database.NewServiceDB(db), database.NewNetworkObjectDB(db))
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.WithValue("jwt", config.TokenAuth))
@@ -98,6 +99,16 @@ func main() {
 		r.Put("/{id}", chainHandler.UpdateChain)
 		r.Delete("/{id}", chainHandler.DeleteChain)
 		r.Get("/", chainHandler.GetChains)
+	})
+	r.Route("/rules", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(config.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Post("/", ruleHandler.CreateRule)
+		// r.Get("/{id}", ruleHandler.GetRule)
+		// r.Get("/filter", ruleHandler.GetRulesWithFilters)
+		// r.Put("/{id}", ruleHandler.UpdateRule)
+		// r.Delete("/{id}", ruleHandler.DeleteRule)
+		// r.Get("/", ruleHandler.GetRules)
 	})
 
 

@@ -39,14 +39,42 @@ type CreateTableDTO struct {
     Description string `json:"description"`
     Type        string `json:"type"`
 }
+type DetailsChainDTO struct {
+    ID          uint64 `json:"id"`
+    Name        string `json:"chain_name"`
+    Type        string `json:"chain_type"`
+    Priority    int    `json:"chain_priority"`
+    Policy       string `json:"chain_policy"`
+    ProjectID  uint64 `json:"project_id"`
+    ProjectName   string `json:"project_name"`
+    TableID     uint64 `json:"table_id"`
+    TableName     string `json:"table_name"`
+    Rules        []DetailsRuleDTO `json:"rules"`
+}
+
+type DetailsRuleDTO struct {
+    Protocol    string `json:"protocol"`
+    Port        int    `json:"port"`
+    Action      string `json:"action"`
+}
+type DetailsTableDTO struct {
+    ID          uint64 `json:"id"`
+    Name        string `json:"name"`
+    Description string `json:"description"`
+    Type        string `json:"type"`
+    Chains      []DetailsChainDTO `json:"chains"`
+}
+
 type CreateChainDTO struct {
     ID         uint64 `json:"id"`
     Name        string `json:"name"`
     Type        string `json:"type"`
     Priority    int    `json:"priority"`
     Policy       string `json:"policy"`
-    ProjectID   uint64 `json:"project_id"`
-	TableID     uint64 `json:"table_id"`
+    ProjectID uint64 `json:"project_id"`
+    ProjectName   string `json:"project_name"`
+    TableID     uint64 `json:"table_id"`
+	TableName     string `json:"table_name"`
 }
 
 type CreateServiceDTO struct {
@@ -60,7 +88,7 @@ type CreateNetworkObjectDTO struct {
 }
 
 type CreateRuleDTO struct {
-    Chain               CreateChainDTO   `json:"chain"`
+    ChainName           string   `json:"chain_name"`
     Protocol            string   `json:"protocol"`
     Port                int      `json:"port"`
     Action              string   `json:"action"`

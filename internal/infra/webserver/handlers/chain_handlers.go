@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -10,14 +11,21 @@ import (
 	"github.com/reinaldosaraiva/nftables-api/internal/dto"
 	"github.com/reinaldosaraiva/nftables-api/internal/entity"
 	"github.com/reinaldosaraiva/nftables-api/internal/infra/database"
+	"gorm.io/gorm"
 )
 
 type ChainHandler struct {
-    ChainDB database.ChainInterface
+    ChainDB  database.ChainInterface
+    ProjectDB database.ProjectInterface
+    TableDB   database.TableInterface
 }
 
-func NewChainHandler(db database.ChainInterface) *ChainHandler {
-    return &ChainHandler{ChainDB: db}
+func NewChainHandler(chainDB database.ChainInterface, projectDB database.ProjectInterface, tableDB database.TableInterface) *ChainHandler {
+    return &ChainHandler{
+        ChainDB:  chainDB,
+        ProjectDB: projectDB,
+        TableDB:   tableDB,
+    }
 }
 
 // CreateChain godoc
@@ -34,24 +42,50 @@ func NewChainHandler(db database.ChainInterface) *ChainHandler {
 func (h *ChainHandler) CreateChain(w http.ResponseWriter, r *http.Request) {
     var chainDTO dto.CreateChainDTO
     err := json.NewDecoder(r.Body).Decode(&chainDTO)
+    fmt.Println(chainDTO)
+    fmt.Println(err)
     if err != nil {
         w.WriteHeader(http.StatusBadRequest)
         return
     }
-	fmt.Println(chainDTO.TableID)
-    chain, err := entity.NewChain(chainDTO.Name,  chainDTO.Type, chainDTO.Policy,chainDTO.Priority, chainDTO.ProjectID, chainDTO.TableID)
+
+    project, err := h.ProjectDB.FindByName(chainDTO.ProjectName)
     if err != nil {
-        w.WriteHeader(http.StatusBadRequest)
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        w.WriteHeader(http.StatusInternalServerError)
         return
     }
+
+    table, err := h.TableDB.FindByName(chainDTO.TableName)
+    if err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            w.WriteHeader(http.StatusNotFound)
+            return
+        }
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    chain := &entity.Chain{
+        Name:     chainDTO.Name,
+        Type:     chainDTO.Type,
+        Policy:   chainDTO.Policy,
+        Priority: chainDTO.Priority,
+        ProjectID: project.ID,
+        TableID:  table.ID,
+    }
+
     err = h.ChainDB.Create(chain)
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
         return
     }
+
     w.WriteHeader(http.StatusCreated)
 }
-
 // GetChain godoc
 // @Summary Get a chain by ID
 // @Description Get a chain by ID
@@ -99,7 +133,7 @@ func (h *ChainHandler) GetChainsWithFilters(w http.ResponseWriter, r *http.Reque
     name := queryValues.Get("name")
     idStr := queryValues.Get("id")
 
-    var chain *entity.Chain
+    var chain *dto.DetailsChainDTO
     var err error
 
     if idStr != "" {

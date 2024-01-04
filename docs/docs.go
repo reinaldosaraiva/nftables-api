@@ -1737,8 +1737,14 @@ const docTemplate = `{
                 "project_id": {
                     "type": "integer"
                 },
+                "project_name": {
+                    "type": "string"
+                },
                 "table_id": {
                     "type": "integer"
+                },
+                "table_name": {
+                    "type": "string"
                 },
                 "type": {
                     "type": "string"
@@ -1774,7 +1780,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "chain": {
-                    "$ref": "#/definitions/dto.CreateChainDTO"
+                    "type": "string"
                 },
                 "network_object_rules": {
                     "type": "array",

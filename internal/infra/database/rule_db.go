@@ -21,7 +21,7 @@ func (rdb *RuleDB) Create(rule *entity.Rule) error {
         return tx.Error
     }
 
-    // Verifique se a Chain associada existe
+    // Verificar se a Chain existe
     if err := tx.First(&entity.Chain{}, rule.ChainID).Error; err != nil {
         tx.Rollback()
         if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -30,6 +30,7 @@ func (rdb *RuleDB) Create(rule *entity.Rule) error {
         return err
     }
 
+    // Criar a Rule
     if err := tx.Create(rule).Error; err != nil {
         tx.Rollback()
         return err
@@ -41,6 +42,15 @@ func (rdb *RuleDB) Create(rule *entity.Rule) error {
 func (rdb *RuleDB) FindByID(id uint64) (*entity.Rule, error) {
     var rule entity.Rule
     err := rdb.DB.Preload("Chain").Where("id = ?", id).First(&rule).Error
+    if err != nil {
+        return nil, err
+    }
+    return &rule, nil
+}
+
+func (rdb *RuleDB) FindByName(name string) (*entity.Rule, error) {
+    var rule entity.Rule
+    err := rdb.DB.Preload("Chain").Where("name = ?", name).First(&rule).Error
     if err != nil {
         return nil, err
     }

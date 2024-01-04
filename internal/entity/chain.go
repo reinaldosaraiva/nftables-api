@@ -8,7 +8,7 @@ type Chain struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`
 	Priority	int    `json:"priority"`
-	Policy		string `json:"policy"`
+	Policy		string  `json:"policy"`
 	ProjectID 	uint64  `json:"project_id"`
 	Project	Project
 	TableID 	uint64  `json:"table_id"`
